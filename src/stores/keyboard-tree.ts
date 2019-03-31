@@ -65,6 +65,16 @@ export default class KeyboardTreeStore {
     this.treePath.push(key)
   }
 
+  @action
+  reset = () => {
+    this.treePath = []
+  }
+
+  @action
+  backOne = () => {
+    this.treePath.pop()
+  }
+
   @observable keyboardTree: SoundboardTree = {
     q: { type: KeyboardTreeType.Leaf, data: mockData[2] },
     '1': { type: KeyboardTreeType.Leaf, data: mockData[1] },

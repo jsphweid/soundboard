@@ -42,9 +42,6 @@ const SoundboardButton: React.SFC<Props> = ({
   })
 
   return (
-    // <div onClick={() => getStores().soundPlayer.triggerSound(soundInfo.id)}>
-    //   {title}
-    // </div>
     <div
       onMouseDown={() => console.log('onMouseDown')}
       onMouseUp={() => console.log('onMouseUp')}
