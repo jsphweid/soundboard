@@ -1,8 +1,13 @@
 const keyState: { [key: string]: boolean } = {}
 
 function passesKeyDownValidation(e: any): boolean {
+  // TODO: in the future, have a different system for
+  // dealing with keys like Command / Control / Option / etc.
   return (
-    keyState[e.key] !== undefined && e.target && e.target.tagName !== 'INPUT'
+    keyState[e.key] !== undefined &&
+    e.target &&
+    e.target.tagName !== 'INPUT' &&
+    !e.metaKey
   )
 }
 
@@ -19,6 +24,8 @@ export function initKeyListeners(keyCallbackMap: {
   document.addEventListener('keydown', (e: any) => {
     // ignore if typing in an <input /> for example
     if (passesKeyDownValidation(e)) {
+      console.log('e', e)
+      console.log('passing validation...')
       e.preventDefault()
       const untriggered = !keyState[e.key]
       if (untriggered) {
