@@ -2,7 +2,7 @@ import * as React from 'react'
 import { SoundboardButtonData } from '../stores/soundboard-buttons-store'
 import { getStores } from '../stores'
 import { SoundInfo } from '../misc-types'
-import { squarePercentText, squarePercent } from '../keyboard-tree'
+import { widthPercentText, widthPercent } from '../keyboard-tree'
 import { ValidTreeThing } from '../keyboard-tree/valid-tree-thing'
 import { handleKeyPressOrClick } from '../keyboard-tree/tree-events'
 
@@ -18,8 +18,6 @@ interface SoundboardButtonDataModified extends SoundboardButtonDataExcluded {
 
 interface Props extends SoundboardButtonDataModified {
   style?: any
-  x: number
-  y: number
   keyboardKey: ValidTreeThing
 }
 
@@ -27,19 +25,14 @@ const SoundboardButton: React.SFC<Props> = ({
   title,
   soundInfo,
   style,
-  keyboardKey,
-  x,
-  y
+  keyboardKey
 }) => {
-  const styles = Object.assign({}, style, {
+  const styles = {
+    ...style,
     position: 'absolute',
-    left: `${x * squarePercent}%`,
-    top: `${y * squarePercent}%`,
-    width: squarePercentText,
-    height: squarePercentText,
     textAlign: 'center'
     // zIndex: isMoving ? 1000 : undefined
-  })
+  }
 
   return (
     <div

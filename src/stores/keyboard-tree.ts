@@ -16,6 +16,7 @@ interface Leaf<T> {
 
 interface Branch<T> extends KeyboardTree<T> {
   type: KeyboardTreeType.Branch
+  title?: string
 }
 
 export type SoundboardTree = KeyboardTree<SoundboardButtonData>
@@ -38,8 +39,9 @@ export default class KeyboardTreeStore {
 
   @computed
   get currentTreeViewArray() {
+    console.log('--', Object.keys(this.currentTreeViewMap))
     return Object.keys(this.currentTreeViewMap)
-      .filter(k => k !== 'type')
+      .filter(k => k !== 'type' && k !== 'title')
       .map(k => {
         const key = k as ValidTreeThing
         const item = this.currentTreeViewMap[key]
@@ -79,9 +81,11 @@ export default class KeyboardTreeStore {
     q: { type: KeyboardTreeType.Leaf, data: mockData[2] },
     '1': { type: KeyboardTreeType.Leaf, data: mockData[1] },
     '2': {
+      title: 'go deeper',
       type: KeyboardTreeType.Branch,
       a: { type: KeyboardTreeType.Leaf, data: mockData[0] },
       b: {
+        title: 'further down',
         type: KeyboardTreeType.Branch,
         b: { type: KeyboardTreeType.Leaf, data: mockData[3] }
       }

@@ -9,6 +9,7 @@ export const layout = [
 ]
 
 export const numItemsWide = layout[0].length
+export const numItemsHigh = layout.length
 
 const coordinateMap = {} as { [key in ValidTreeThing]: Coordinate }
 

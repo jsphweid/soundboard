@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { Link } from 'gatsby'
 import KeyboardTree from '../keyboard-tree'
+
+import './index.css'
 
 export default () => (
   <div>

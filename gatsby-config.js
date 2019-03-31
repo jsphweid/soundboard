@@ -1,8 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Gatsby MobX starter',
+    title: 'Gatsby MobX starter'
   },
-  plugins: [
-    'gatsby-plugin-typescript',
-  ],
-};
+  plugins: ['gatsby-plugin-typescript']
+}

@@ -24,8 +24,6 @@ export function initKeyListeners(keyCallbackMap: {
   document.addEventListener('keydown', (e: any) => {
     // ignore if typing in an <input /> for example
     if (passesKeyDownValidation(e)) {
-      console.log('e', e)
-      console.log('passing validation...')
       e.preventDefault()
       const untriggered = !keyState[e.key]
       if (untriggered) {
