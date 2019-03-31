@@ -6,7 +6,7 @@ function makeMd5(obj: { type: SoundInfoTypes; url: string }): string {
   return md5(JSON.stringify(obj))
 }
 
-export const data = [
+export const mockData = [
   {
     title: 'airhorn',
     url: 'https://www.myinstants.com/media/sounds/mlg-airhorn.mp3'

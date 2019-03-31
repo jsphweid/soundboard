@@ -3,3 +3,8 @@ export interface Sound {
   stop: () => Promise<void>
   prime: () => void
 }
+
+export interface Coordinate {
+  x: number
+  y: number
+}

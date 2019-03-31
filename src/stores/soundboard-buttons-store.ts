@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { SoundInfo } from '../misc-types'
-import { data } from './data'
+import { mockData } from './data'
 
 export interface SoundboardButtonData {
   title: string
@@ -8,5 +8,5 @@ export interface SoundboardButtonData {
 }
 
 export default class SoundboardButtonsStore {
-  @observable buttons: SoundboardButtonData[] = data
+  @observable buttons: SoundboardButtonData[] = mockData
 }

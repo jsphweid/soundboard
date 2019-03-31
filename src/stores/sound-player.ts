@@ -2,7 +2,7 @@ import { action, observable, computed } from 'mobx'
 import { SoundInfo, SoundInfoTypes } from '../misc-types'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
-import { data } from './data'
+import { mockData } from './data'
 
 function makeSoundFromSoundInfo(soundInfo: SoundInfo): Sound {
   switch (soundInfo.type) {
@@ -15,7 +15,7 @@ export default class SoundPlayer {
   @observable soundMap = new Map<string, Sound>()
 
   constructor() {
-    data.forEach(b => {
+    mockData.forEach(b => {
       this.soundMap.set(b.soundInfo.id, makeSoundFromSoundInfo(b.soundInfo))
     })
   }

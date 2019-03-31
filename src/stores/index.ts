@@ -1,16 +1,19 @@
 import { observable } from 'mobx'
 import SoundboardButtonsStore from './soundboard-buttons-store'
-import SoundPlayer from './sound-player'
+import SoundPlayerStore from './sound-player'
+import KeyboardTreeStore from './keyboard-tree'
 
 let stores = initialize()
 
 function initialize() {
   const soundboardButtons = new SoundboardButtonsStore()
-  const soundPlayer = new SoundPlayer()
+  const soundPlayer = new SoundPlayerStore()
+  const keyboardTree = new KeyboardTreeStore()
 
   return observable({
     soundboardButtons,
-    soundPlayer
+    soundPlayer,
+    keyboardTree
   })
 }
 
