@@ -137,14 +137,18 @@ export default class KeyboardTreeStore {
       delete rootRef[currentKeyboardKey]
     }
 
+    // if a swap, put the thing being replaced in old slot
     if (itemInTarget) {
-      const itemInTargetCopy = { ...this.getItem(pathToTarget) }
-      // TODO: implement me
-      // copy to old location
+      const itemInTargetCopy = {
+        ...this.getItem(pathToTarget)
+      } as SoundboardTreeNode
+      if (rootRef) {
+        rootRef[currentKeyboardKey] = itemInTargetCopy
+      }
     }
+
     // set to new location
     const newSection = this.getItem(this.treePath)
-    // handle weird case when it is not... I'm too tired...
     if (newSection) {
       newSection[targetKeyboardKey] = itemInitiatingMoveCopy
     }
@@ -154,6 +158,7 @@ export default class KeyboardTreeStore {
   //   delete this.keyboardTree
   // }
 
+  // TODO: maybe not return null? lol
   getItem = (path: ValidTreeThing[]): SoundboardTree | null => {
     try {
       if (!path.length) return this.keyboardTree
