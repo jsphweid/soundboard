@@ -9,14 +9,23 @@ import { getCoordinate, getKeyboardKey } from '../keyboard-tree/layout'
 import { Coordinate } from '../sounds/types'
 
 export enum KeyboardTreeType {
-  Branch,
-  Leaf
+  Branch = 'Branch',
+  Leaf = 'Leaf',
+  Twig = 'Twig'
 }
+
+// TODO... if everything has type, id, data... do it off of that
 
 interface Leaf<T> {
   type: KeyboardTreeType.Leaf
   id: string
   data: T
+}
+
+interface Twig<T> extends TwigItems<T> {
+  type: KeyboardTreeType.Twig
+  id: string
+  title: string
 }
 
 interface Branch<T> extends KeyboardTree<T> {
@@ -33,7 +42,10 @@ export type SoundboardTreeNode = Node<SoundboardButtonData>
 
 // add concept of a twig...?
 
-type KeyboardTree<T> = { [key in ValidTreeThing]?: Leaf<T> | Branch<T> }
+type KeyboardTree<T> = {
+  [key in ValidTreeThing]?: Leaf<T> | Branch<T> | Twig<T>
+}
+type TwigItems<T> = { [key in ValidTreeThing]?: Leaf<T> }
 
 export default class KeyboardTreeStore {
   @observable treePath: ValidTreeThing[] = []
@@ -68,8 +80,22 @@ export default class KeyboardTreeStore {
   }
 
   @computed
+  get parentTreeViewMap() {
+    return this.getItem(this.treePath.slice(-1)) as SoundboardTree
+  }
+
+  @computed
   get currentTreeViewArray() {
-    return Object.keys(this.currentTreeViewMap)
+    return this.viewToArray(this.currentTreeViewMap)
+  }
+
+  @computed
+  get parentTreeViewArray() {
+    return this.viewToArray(this.parentTreeViewMap)
+  }
+
+  viewToArray = (view: SoundboardTree) => {
+    return Object.keys(view)
       .filter(isValidTreeThing)
       .map(key => {
         const item = this.currentTreeViewMap[key]
@@ -201,9 +227,19 @@ export default class KeyboardTreeStore {
     title: 'my soundboard tree',
     id: '123123',
     type: KeyboardTreeType.Branch,
+    '1': {
+      type: KeyboardTreeType.Twig,
+      title: 'twig 1',
+      id: 'aaa',
+      v: { type: KeyboardTreeType.Leaf, data: mockData[2], id: '333' }
+    },
+    '2': { type: KeyboardTreeType.Twig, title: 'twig 1', id: 'bbb' },
+    '3': { type: KeyboardTreeType.Twig, title: 'twig 1', id: 'ccc' },
+    '4': { type: KeyboardTreeType.Twig, title: 'twig 1', id: 'ddd' },
+    '5': { type: KeyboardTreeType.Branch, title: 'how far', id: 'eee' },
     q: { type: KeyboardTreeType.Leaf, data: mockData[2], id: '111' },
-    '1': { type: KeyboardTreeType.Leaf, data: mockData[1], id: '222' },
-    '2': {
+    w: { type: KeyboardTreeType.Leaf, data: mockData[1], id: '222' },
+    e: {
       id: '333',
       title: 'go deeper',
       type: KeyboardTreeType.Branch,

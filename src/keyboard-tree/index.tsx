@@ -6,6 +6,7 @@ import { numItemsWide, layout, numItemsHigh } from './layout'
 import { observer } from 'mobx-react'
 import { Coordinate } from '../sounds/types'
 import { determineTileCoordsFromXY } from './helpers'
+import { branchPic, leafPic, twigPic } from './constants'
 
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
@@ -85,23 +86,6 @@ export default class KeyboardTree extends React.Component<Props, State> {
     getStores().keyboardTree.moveItem(id, position)
   }
 
-  handlePausedForAWhile = (id: string, pausedCoord: Coordinate) => {
-    console.log('pausedCoord', pausedCoord)
-    const position = determineTileCoordsFromXY(
-      { ...this.state, numItemsHigh, numItemsWide },
-      pausedCoord
-    )
-    if (!position) {
-      console.log('Ignoring drop because it was out of range.')
-      return
-    }
-    console.log('position', position)
-
-    // TODO: this fundamentally will not work because the items displayed / view are only for this one view... maybe change that? or think of some other strategy
-
-    getStores().keyboardTree.goInto(position)
-  }
-
   public render() {
     const tiles = layout.map(row =>
       row.flatMap(key => (
@@ -138,32 +122,47 @@ export default class KeyboardTree extends React.Component<Props, State> {
 
     const soundboardButtons = getStores().keyboardTree.currentTreeViewArray.map(
       (item, i) => {
-        const backgroundImage =
-          item.type === KeyboardTreeType.Branch
-            ? 'url(https://res.cloudinary.com/dx6f6g5cv/image/upload/c_scale,o_12,q_32,w_463/v1554043826/1_xUVx8GVAl1AFgb9wp-PlyA_msxm5k.jpg)'
-            : 'url(https://res.cloudinary.com/dx6f6g5cv/image/upload/c_scale,o_12,q_43,w_534/v1552677118/speakers-sound-icon-music-0a3787-1024_t1snbx.png)'
         const reactKey = `soundboard-button-${i}`
         const { x, y } = item.coordinate
         const style = {
           left: `${x * widthPercent}%`,
           top: `${y * heightPercent}%`,
           fontFamily,
-          fontSize: this.state.mainFontSize,
-          backgroundImage
+          fontSize: this.state.mainFontSize
         }
         const commonProps = {
           key: reactKey,
-          style,
           id: item.id,
           keyboardKey: item.key,
-          dropHandler: this.handleDrop,
-          pausedForAWhileHandler: this.handlePausedForAWhile
+          dropHandler: this.handleDrop
         }
-        return item.type === KeyboardTreeType.Branch ? (
-          <SoundboardButton {...commonProps} title={item.title} />
-        ) : (
-          <SoundboardButton {...commonProps} {...item.data} />
-        )
+
+        switch (item.type) {
+          case KeyboardTreeType.Branch:
+            return (
+              <SoundboardButton
+                {...commonProps}
+                style={{ ...style, backgroundImage: `url(${branchPic})` }}
+                title={item.title}
+              />
+            )
+          case KeyboardTreeType.Leaf:
+            return (
+              <SoundboardButton
+                {...commonProps}
+                {...item.data}
+                style={{ ...style, backgroundImage: `url(${leafPic})` }}
+              />
+            )
+          case KeyboardTreeType.Twig:
+            return (
+              <SoundboardButton
+                {...commonProps}
+                title={item.title}
+                style={{ ...style, backgroundImage: `url(${twigPic})` }}
+              />
+            )
+        }
       }
     )
 

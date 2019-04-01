@@ -9,7 +9,7 @@ import {
 } from '../keyboard-tree'
 import { ValidTreeThing } from '../keyboard-tree/valid-tree-thing'
 import { handleKeyPressOrClick } from '../keyboard-tree/tree-events'
-import Draggable, { DraggableData } from 'react-draggable'
+import Draggable from 'react-draggable'
 import { Coordinate } from '../sounds/types'
 
 // TODO: maybe this means I should be doing something else
@@ -26,14 +26,12 @@ interface Props extends SoundboardButtonDataModified {
   style?: any
   keyboardKey: ValidTreeThing
   dropHandler: (key: string, { x, y }: Coordinate) => void
-  pausedForAWhileHandler: (key: string, { x, y }: Coordinate) => void
   id: string
 }
 
 interface State {
   isReallyDragging: boolean
   dragCounter: number
-  pausedHandlerJustCalled: boolean
 }
 
 export default class SoundboardButton extends React.Component<Props, State> {
@@ -44,8 +42,7 @@ export default class SoundboardButton extends React.Component<Props, State> {
     super(props)
     this.state = {
       isReallyDragging: false,
-      dragCounter: 0,
-      pausedHandlerJustCalled: false
+      dragCounter: 0
     }
   }
 
@@ -79,30 +76,16 @@ export default class SoundboardButton extends React.Component<Props, State> {
       () =>
         this.setState({
           isReallyDragging: false,
-          dragCounter: 0,
-          pausedHandlerJustCalled: false
+          dragCounter: 0
         }),
       100
     )
   }
 
   private handleDragging = (e: any) => {
-    if (this.pausedDragTimer) {
-      clearTimeout(this.pausedDragTimer)
-    }
-    this.pausedDragTimer = setTimeout(() => {
-      if (!this.state.pausedHandlerJustCalled) {
-        this.setState({ pausedHandlerJustCalled: true })
-        this.props.pausedForAWhileHandler(this.props.id, {
-          x: e.clientX,
-          y: e.clientY
-        })
-      }
-    }, 1000)
     this.setState({
       isReallyDragging: true,
-      dragCounter: this.state.dragCounter + 1,
-      pausedHandlerJustCalled: false
+      dragCounter: this.state.dragCounter + 1
     })
   }
 
