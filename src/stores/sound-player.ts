@@ -1,4 +1,4 @@
-import { action, observable, computed } from 'mobx'
+import { action, observable } from 'mobx'
 import { SoundInfo, SoundInfoTypes } from '../misc-types'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
@@ -11,20 +11,25 @@ function makeSoundFromSoundInfo(soundInfo: SoundInfo): Sound {
   }
 }
 
+// TODO: get rid of soundId and use use main ID?
+
 export default class SoundPlayer {
   @observable soundMap = new Map<string, Sound>()
 
   constructor() {
     mockData.forEach(b => {
-      this.soundMap.set(b.soundInfo.id, makeSoundFromSoundInfo(b.soundInfo))
+      this.soundMap.set(
+        b.soundInfo.soundInfoId,
+        makeSoundFromSoundInfo(b.soundInfo)
+      )
     })
   }
 
   @action
-  triggerSound(id: string) {
-    const sound = this.soundMap.get(id)
+  triggerSound(soundInfoId: string) {
+    const sound = this.soundMap.get(soundInfoId)
     if (!sound) {
-      console.log(`sound ${id} not here......`)
+      console.log(`sound ${soundInfoId} not here......`)
       return
     }
     sound.trigger()

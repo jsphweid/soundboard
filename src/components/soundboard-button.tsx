@@ -2,9 +2,15 @@ import * as React from 'react'
 import { SoundboardButtonData } from '../stores/soundboard-buttons-store'
 import { getStores } from '../stores'
 import { SoundInfo } from '../misc-types'
-import { widthPercentText, widthPercent } from '../keyboard-tree'
+import {
+  widthPercentText,
+  widthPercent,
+  heightPercentText
+} from '../keyboard-tree'
 import { ValidTreeThing } from '../keyboard-tree/valid-tree-thing'
 import { handleKeyPressOrClick } from '../keyboard-tree/tree-events'
+import Draggable, { DraggableData } from 'react-draggable'
+import { Coordinate } from '../sounds/types'
 
 // TODO: maybe this means I should be doing something else
 type SoundboardButtonDataExcluded = Pick<
@@ -19,34 +25,76 @@ interface SoundboardButtonDataModified extends SoundboardButtonDataExcluded {
 interface Props extends SoundboardButtonDataModified {
   style?: any
   keyboardKey: ValidTreeThing
+  dropHandler: (key: string, { x, y }: Coordinate) => void
+  id: string
 }
 
-const SoundboardButton: React.SFC<Props> = ({
-  title,
-  soundInfo,
-  style,
-  keyboardKey
-}) => {
-  const styles = {
-    ...style,
-    position: 'absolute',
-    textAlign: 'center'
-    // zIndex: isMoving ? 1000 : undefined
+interface State {
+  isReallyDragging: boolean
+  dragCounter: number
+}
+
+export default class SoundboardButton extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      isReallyDragging: false,
+      dragCounter: 0
+    }
   }
 
-  return (
-    <div
-      onMouseDown={() => console.log('onMouseDown')}
-      onMouseUp={() => console.log('onMouseUp')}
-      onTouchEnd={() => console.log('onTouchEnd')}
-      onTouchStart={() => console.log('onTouchStart')}
-      onClick={() => handleKeyPressOrClick(keyboardKey)}
-      style={styles}
-    >
-      {/* <Piece size="85%" /> */}
-      {title}
-    </div>
-  )
-}
+  private handleClick = () => {
+    const { isReallyDragging, dragCounter } = this.state
+    if (!isReallyDragging || dragCounter < 5) {
+      // TODO: use id?
+      handleKeyPressOrClick(this.props.keyboardKey)
+    }
+  }
 
-export default SoundboardButton
+  private handleStop = (e: any) => {
+    // Works assuming origin 0, 0 is top left of board
+    this.props.dropHandler(this.props.id, {
+      x: e.clientX,
+      y: e.clientY
+    })
+    setTimeout(
+      () => this.setState({ isReallyDragging: false, dragCounter: 0 }),
+      100
+    )
+  }
+
+  private handleDragging = () => {
+    console.log('handleDragging')
+    this.setState({
+      isReallyDragging: true,
+      dragCounter: this.state.dragCounter + 1
+    })
+  }
+
+  render() {
+    const styles = {
+      ...this.props.style,
+      position: 'absolute',
+      textAlign: 'center',
+      backgroundColor: '#aaaaaa',
+      backgroundPosition: 'center',
+      opacity: '0.4',
+      width: widthPercentText,
+      height: heightPercentText
+    }
+
+    return (
+      <Draggable
+        bounds="parent"
+        position={{ x: 0, y: 0 }}
+        // onStart={}
+        onDrag={this.handleDragging}
+        onStop={this.handleStop}
+      >
+        <div onClick={this.handleClick} style={styles}>
+          {this.props.title}
+        </div>
+      </Draggable>
+    )
+  }
+}

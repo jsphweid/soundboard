@@ -22,3 +22,12 @@ layout.forEach((row, y) => {
 export function getCoordinate(key: ValidTreeThing) {
   return coordinateMap[key]
 }
+
+export function getKeyboardKey(coordinate: Coordinate): ValidTreeThing | null {
+  try {
+    return layout[coordinate.y][coordinate.x] as ValidTreeThing
+  } catch (e) {
+    console.log('This coordinate does not map to a key...')
+    return null
+  }
+}

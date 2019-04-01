@@ -4,7 +4,7 @@ export enum SoundInfoTypes {
 
 interface BaseSoundInfo {
   type: SoundInfoTypes
-  id: string
+  soundInfoId: string
 }
 
 export interface UrlSoundInfo extends BaseSoundInfo {

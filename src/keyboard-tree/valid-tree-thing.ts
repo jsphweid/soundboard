@@ -46,7 +46,11 @@ const validTreeThings = {
   b: true
 }
 
-export const validTreeThing = (treeThing: string): boolean => {
+// TODO: rename every "valid tree thing" to keyboardKey
+
+export const isValidTreeThing = (
+  treeThing: string
+): treeThing is ValidTreeThing => {
   const runtimeCopy = { ...validTreeThings } as any
   return !!runtimeCopy[treeThing]
 }

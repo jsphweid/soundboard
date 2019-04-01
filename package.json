@@ -11,7 +11,7 @@
     "lint": "tslint -p .",
     "prettier": "prettier --write 'src/**'",
     "gatsby": "gatsby",
-    "test": "jest"
+    "test:dev": "jest --watch"
   },
   "dependencies": {
     "@babel/core": "^7.4.0",
@@ -70,9 +70,7 @@
     ],
     "globals": {
       "__PATH_PREFIX__": ""
-    },
-    "setupFiles": [
-      "<rootDir>/jest/loadershim.js"
-    ]
+    }
+  
   }
 }

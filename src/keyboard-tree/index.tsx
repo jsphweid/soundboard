@@ -4,6 +4,8 @@ import { KeyboardTreeType } from '../stores/keyboard-tree'
 import SoundboardButton from '../components/soundboard-button'
 import { numItemsWide, layout, numItemsHigh } from './layout'
 import { observer } from 'mobx-react'
+import { Coordinate } from '../sounds/types'
+import { determineTileCoordsFromXY } from './helpers'
 
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
@@ -72,7 +74,20 @@ export default class KeyboardTree extends React.Component<Props, State> {
     })
   }
 
+  handleDrop = (id: string, dropCoord: Coordinate) => {
+    const position = determineTileCoordsFromXY(
+      { ...this.state, numItemsHigh, numItemsWide },
+      dropCoord
+    )
+    if (!position) {
+      console.log('Ignoring drop because it was out of range.')
+      return
+    }
+    console.log('position', position)
+  }
+
   public render() {
+    console.log(getStores().keyboardTree.globalTreeFlattenedNoChildren)
     const tiles = layout.map(row =>
       row.flatMap(key => (
         <div
@@ -108,7 +123,6 @@ export default class KeyboardTree extends React.Component<Props, State> {
 
     const soundboardButtons = getStores().keyboardTree.currentTreeViewArray.map(
       (item, i) => {
-        console.log('item', item)
         const backgroundImage =
           item.type === KeyboardTreeType.Branch
             ? 'url(https://res.cloudinary.com/dx6f6g5cv/image/upload/c_scale,o_12,q_32,w_463/v1554043826/1_xUVx8GVAl1AFgb9wp-PlyA_msxm5k.jpg)'
@@ -120,32 +134,20 @@ export default class KeyboardTree extends React.Component<Props, State> {
           top: `${y * heightPercent}%`,
           fontFamily,
           fontSize: this.state.mainFontSize,
-          backgroundColor: '#aaaaaa',
-          backgroundImage,
-          backgroundPosition: 'center',
-          opacity: '0.4',
-          width: widthPercentText,
-          height: heightPercentText
+          backgroundImage
         }
-        if (item.type === KeyboardTreeType.Branch) {
-          return (
-            <SoundboardButton
-              key={reactKey}
-              style={style}
-              title={item.title || 'deeper'}
-              keyboardKey={item.key}
-            />
-          )
-        } else {
-          return (
-            <SoundboardButton
-              key={reactKey}
-              style={style}
-              {...item.data || 'go deeper'}
-              keyboardKey={item.key}
-            />
-          )
+        const commonProps = {
+          key: reactKey,
+          style,
+          id: item.id,
+          keyboardKey: item.key,
+          dropHandler: this.handleDrop
         }
+        return item.type === KeyboardTreeType.Branch ? (
+          <SoundboardButton {...commonProps} title={item.title || 'deeper'} />
+        ) : (
+          <SoundboardButton {...commonProps} {...item.data} />
+        )
       }
     )
 

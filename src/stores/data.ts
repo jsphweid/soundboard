@@ -29,6 +29,6 @@ export const mockData = [
   soundInfo: {
     type: SoundInfoTypes.UrlSound,
     url,
-    id: makeMd5({ type: SoundInfoTypes.UrlSound, url })
+    soundInfoId: makeMd5({ type: SoundInfoTypes.UrlSound, url })
   }
 }))

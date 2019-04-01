@@ -14,6 +14,6 @@ export function handleKeyPressOrClick(key: ValidTreeThing) {
   if (thing.type === KeyboardTreeType.Branch) {
     keyboardTree.goInto(key)
   } else {
-    soundPlayer.triggerSound(thing.data.soundInfo.id)
+    soundPlayer.triggerSound(thing.data.soundInfo.soundInfoId)
   }
 }
