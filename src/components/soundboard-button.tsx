@@ -26,28 +26,35 @@ interface Props extends SoundboardButtonDataModified {
   style?: any
   keyboardKey: ValidTreeThing
   dropHandler: (key: string, { x, y }: Coordinate) => void
+  pausedForAWhileHandler: (key: string, { x, y }: Coordinate) => void
   id: string
 }
 
 interface State {
   isReallyDragging: boolean
   dragCounter: number
+  pausedHandlerJustCalled: boolean
 }
 
 export default class SoundboardButton extends React.Component<Props, State> {
   private delayedAction: NodeJS.Timer | undefined
+  private pausedDragTimer: NodeJS.Timer | undefined
 
   constructor(props: Props) {
     super(props)
     this.state = {
       isReallyDragging: false,
-      dragCounter: 0
+      dragCounter: 0,
+      pausedHandlerJustCalled: false
     }
   }
 
   componentWillUnmount() {
     if (this.delayedAction) {
       clearTimeout(this.delayedAction)
+    }
+    if (this.pausedDragTimer) {
+      clearTimeout(this.pausedDragTimer)
     }
   }
 
@@ -61,21 +68,41 @@ export default class SoundboardButton extends React.Component<Props, State> {
 
   private handleStop = (e: any) => {
     // Works assuming origin 0, 0 is top left of board
+    if (this.pausedDragTimer) {
+      clearTimeout(this.pausedDragTimer)
+    }
     this.props.dropHandler(this.props.id, {
       x: e.clientX,
       y: e.clientY
     })
     this.delayedAction = setTimeout(
-      () => this.setState({ isReallyDragging: false, dragCounter: 0 }),
+      () =>
+        this.setState({
+          isReallyDragging: false,
+          dragCounter: 0,
+          pausedHandlerJustCalled: false
+        }),
       100
     )
   }
 
-  private handleDragging = () => {
-    console.log('handleDragging')
+  private handleDragging = (e: any) => {
+    if (this.pausedDragTimer) {
+      clearTimeout(this.pausedDragTimer)
+    }
+    this.pausedDragTimer = setTimeout(() => {
+      if (!this.state.pausedHandlerJustCalled) {
+        this.setState({ pausedHandlerJustCalled: true })
+        this.props.pausedForAWhileHandler(this.props.id, {
+          x: e.clientX,
+          y: e.clientY
+        })
+      }
+    }, 1000)
     this.setState({
       isReallyDragging: true,
-      dragCounter: this.state.dragCounter + 1
+      dragCounter: this.state.dragCounter + 1,
+      pausedHandlerJustCalled: false
     })
   }
 

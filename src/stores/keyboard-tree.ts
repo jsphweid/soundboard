@@ -22,12 +22,14 @@ interface Leaf<T> {
 interface Branch<T> extends KeyboardTree<T> {
   type: KeyboardTreeType.Branch
   id: string
-  title?: string
+  title: string
 }
 
-export type SoundboardTree = KeyboardTree<SoundboardButtonData>
+export type BaseSoundboardKeyboardTree = KeyboardTree<SoundboardButtonData>
+
+export type SoundboardTree = Branch<SoundboardButtonData>
 type Node<T> = Leaf<T> | Branch<T>
-type SoundboardTreeNode = Node<SoundboardButtonData>
+export type SoundboardTreeNode = Node<SoundboardButtonData>
 
 // add concept of a twig...?
 
@@ -38,9 +40,10 @@ export default class KeyboardTreeStore {
 
   @computed
   get globalTreeFlattenedNoChildren() {
-    interface TreeWithPath extends SoundboardTree {
+    interface TreeWithPath extends BaseSoundboardKeyboardTree {
       path: ValidTreeThing[]
       keyboardKey: ValidTreeThing
+      type: KeyboardTreeType
     }
     const flattenedTree: { [key: string]: TreeWithPath } = {}
     const addChildren = (tree: SoundboardTree, path: ValidTreeThing[] = []) => {
@@ -88,8 +91,28 @@ export default class KeyboardTreeStore {
   }
 
   @action
-  goInto = (key: ValidTreeThing) => {
-    this.treePath.push(key)
+  goInto = (input: ValidTreeThing | Coordinate) => {
+    const keyboardKey =
+      typeof input === 'string' && isValidTreeThing(input)
+        ? input
+        : getKeyboardKey(input)
+    if (!keyboardKey) {
+      console.log('Somehow the coordinate is not right.')
+      return
+    }
+
+    console.log('keyboardKey', keyboardKey)
+
+    console.log('input', input)
+
+    const node = this.getItem([...this.treePath, keyboardKey])
+    console.log('node', toJS(node))
+    if (node && node.type === KeyboardTreeType.Branch) {
+      console.log('attempting to go into', keyboardKey)
+      this.treePath.push(keyboardKey)
+    } else {
+      console.log('Cannot go into a non-branch.')
+    }
   }
 
   @action
@@ -175,6 +198,9 @@ export default class KeyboardTreeStore {
   }
 
   @observable keyboardTree: SoundboardTree = {
+    title: 'my soundboard tree',
+    id: '123123',
+    type: KeyboardTreeType.Branch,
     q: { type: KeyboardTreeType.Leaf, data: mockData[2], id: '111' },
     '1': { type: KeyboardTreeType.Leaf, data: mockData[1], id: '222' },
     '2': {

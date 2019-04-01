@@ -66,7 +66,7 @@ export default class KeyboardTree extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { clientWidth, clientHeight } = this.els.board
+    const { clientWidth } = this.els.board
     this.setState({
       ...this.computeMeasurements(clientWidth, window.innerHeight)
     })
@@ -83,6 +83,23 @@ export default class KeyboardTree extends React.Component<Props, State> {
     }
 
     getStores().keyboardTree.moveItem(id, position)
+  }
+
+  handlePausedForAWhile = (id: string, pausedCoord: Coordinate) => {
+    console.log('pausedCoord', pausedCoord)
+    const position = determineTileCoordsFromXY(
+      { ...this.state, numItemsHigh, numItemsWide },
+      pausedCoord
+    )
+    if (!position) {
+      console.log('Ignoring drop because it was out of range.')
+      return
+    }
+    console.log('position', position)
+
+    // TODO: this fundamentally will not work because the items displayed / view are only for this one view... maybe change that? or think of some other strategy
+
+    getStores().keyboardTree.goInto(position)
   }
 
   public render() {
@@ -139,10 +156,11 @@ export default class KeyboardTree extends React.Component<Props, State> {
           style,
           id: item.id,
           keyboardKey: item.key,
-          dropHandler: this.handleDrop
+          dropHandler: this.handleDrop,
+          pausedForAWhileHandler: this.handlePausedForAWhile
         }
         return item.type === KeyboardTreeType.Branch ? (
-          <SoundboardButton {...commonProps} title={item.title || 'deeper'} />
+          <SoundboardButton {...commonProps} title={item.title} />
         ) : (
           <SoundboardButton {...commonProps} {...item.data} />
         )
