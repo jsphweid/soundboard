@@ -35,11 +35,19 @@ interface State {
 }
 
 export default class SoundboardButton extends React.Component<Props, State> {
+  private delayedAction: NodeJS.Timer | undefined
+
   constructor(props: Props) {
     super(props)
     this.state = {
       isReallyDragging: false,
       dragCounter: 0
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.delayedAction) {
+      clearTimeout(this.delayedAction)
     }
   }
 
@@ -57,7 +65,7 @@ export default class SoundboardButton extends React.Component<Props, State> {
       x: e.clientX,
       y: e.clientY
     })
-    setTimeout(
+    this.delayedAction = setTimeout(
       () => this.setState({ isReallyDragging: false, dragCounter: 0 }),
       100
     )

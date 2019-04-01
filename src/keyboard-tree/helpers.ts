@@ -10,7 +10,6 @@ export function determineTileCoordsFromXY(
   xy: Coordinate
 ): Coordinate | null {
   const { boardHeight, boardWidth, numItemsHigh, numItemsWide } = boardDetails
-  console.log('boardDetails', boardDetails)
   const y = Math.floor((xy.y / boardHeight) * numItemsHigh)
   const x = Math.floor((xy.x / boardWidth) * numItemsWide)
   return x >= numItemsWide || y >= numItemsHigh || x < 0 || y < 0

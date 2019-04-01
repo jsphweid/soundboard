@@ -60,7 +60,6 @@ export default class KeyboardTree extends React.Component<Props, State> {
   }
 
   handleResize = (size: { width: number; height: number }) => {
-    console.log('size', window.innerHeight)
     this.setState({
       ...this.computeMeasurements(size.width, window.innerHeight)
     })
@@ -68,7 +67,6 @@ export default class KeyboardTree extends React.Component<Props, State> {
 
   componentDidMount() {
     const { clientWidth, clientHeight } = this.els.board
-    console.log('indow.innerHeight', window.innerHeight)
     this.setState({
       ...this.computeMeasurements(clientWidth, window.innerHeight)
     })
@@ -88,7 +86,6 @@ export default class KeyboardTree extends React.Component<Props, State> {
   }
 
   public render() {
-    console.log(getStores().keyboardTree.globalTreeFlattenedNoChildren)
     const tiles = layout.map(row =>
       row.flatMap(key => (
         <div
