@@ -83,7 +83,8 @@ export default class KeyboardTree extends React.Component<Props, State> {
       console.log('Ignoring drop because it was out of range.')
       return
     }
-    console.log('position', position)
+
+    getStores().keyboardTree.moveItem(id, position)
   }
 
   public render() {

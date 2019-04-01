@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx'
+import { observable, computed, action, toJS } from 'mobx'
 import { SoundboardButtonData } from './soundboard-buttons-store'
 import { mockData } from './data'
 import {
@@ -26,6 +26,8 @@ interface Branch<T> extends KeyboardTree<T> {
 }
 
 export type SoundboardTree = KeyboardTree<SoundboardButtonData>
+type Node<T> = Leaf<T> | Branch<T>
+type SoundboardTreeNode = Node<SoundboardButtonData>
 
 // add concept of a twig...?
 
@@ -38,6 +40,7 @@ export default class KeyboardTreeStore {
   get globalTreeFlattenedNoChildren() {
     interface TreeWithPath extends SoundboardTree {
       path: ValidTreeThing[]
+      keyboardKey: ValidTreeThing
     }
     const flattenedTree: { [key: string]: TreeWithPath } = {}
     const addChildren = (tree: SoundboardTree, path: ValidTreeThing[] = []) => {
@@ -49,7 +52,7 @@ export default class KeyboardTreeStore {
           if (item.type === KeyboardTreeType.Branch) {
             addChildren(item, [...path, key])
           }
-          flattenedTree[item.id] = { ...item, path }
+          flattenedTree[item.id] = { ...item, path, keyboardKey: key }
         })
     }
     addChildren(this.keyboardTree)
@@ -100,33 +103,65 @@ export default class KeyboardTreeStore {
   }
 
   @action
-  moveItem = (
-    id: string,
-    coordinate: Coordinate,
-    path: ValidTreeThing[] = this.treePath
-  ) => {
+  moveItem = (id: string, coordinate: Coordinate) => {
+    const nodeInfo = this.globalTreeFlattenedNoChildren[id]
     const targetKeyboardKey = getKeyboardKey(coordinate)
 
     if (!targetKeyboardKey) {
       console.log('Somehow the target keyboard key was not found.')
       return
     }
-    const itemInTarget = this.getItem([...path, targetKeyboardKey])
+
+    if (
+      nodeInfo.keyboardKey === targetKeyboardKey &&
+      JSON.stringify(nodeInfo.path) === JSON.stringify(this.treePath)
+    ) {
+      // Basically it hasn't moved... ignore
+      return
+    }
+
+    const currentKeyboardKey = nodeInfo.keyboardKey
+    const existingPath = nodeInfo.path
+
+    const pathToExisting = [...existingPath, currentKeyboardKey]
+    const pathToTarget = [...this.treePath, targetKeyboardKey]
+
+    const itemInitiatingMoveCopy = {
+      ...this.getItem(pathToExisting)
+    } as SoundboardTreeNode
+    const itemInTarget = this.getItem([...this.treePath, targetKeyboardKey])
+
+    // delete old item
+    const rootRef = this.getItem(existingPath)
+    if (rootRef) {
+      delete rootRef[currentKeyboardKey]
+    }
 
     if (itemInTarget) {
-
-    } else {
-      delete 
-      
+      const itemInTargetCopy = { ...this.getItem(pathToTarget) }
+      // TODO: implement me
+      // copy to old location
     }
-    // is there an item there?
+    // set to new location
+    const newSection = this.getItem(this.treePath)
+    // handle weird case when it is not... I'm too tired...
+    if (newSection) {
+      newSection[targetKeyboardKey] = itemInitiatingMoveCopy
+    }
   }
+
+  // deleteItem = (path: ValidTreeThing[]): void => {
+  //   delete this.keyboardTree
+  // }
 
   getItem = (path: ValidTreeThing[]): SoundboardTree | null => {
     try {
-      let currentTree = { ...this.keyboardTree }
+      if (!path.length) return this.keyboardTree
+      let currentTree: SoundboardTree | null = null
       path.forEach(treeThing => {
-        currentTree = currentTree[treeThing] as SoundboardTree
+        currentTree = currentTree
+          ? (currentTree[treeThing] as SoundboardTree)
+          : (this.keyboardTree[treeThing] as SoundboardTree)
       })
       return currentTree
     } catch (_) {
