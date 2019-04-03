@@ -1,33 +1,23 @@
-import { Coordinate } from '../sounds/types'
-import { ValidTreeThing } from './valid-tree-thing'
+// import { Coordinate } from '../sounds/types'
+// import { ValidTreeThing } from './valid-tree-thing'
 
-export const layout = [
-  ['1', '2', '3', '4', '5'],
-  ['q', 'w', 'e', 'r', 't'],
-  ['a', 's', 'd', 'f', 'g'],
-  ['z', 'x', 'c', 'v', 'b']
-]
+// const coordinateMap = {} as { [key in ValidTreeThing]: Coordinate }
 
-export const numItemsWide = layout[0].length
-export const numItemsHigh = layout.length
+// layout.forEach((row, y) => {
+//   row.forEach((item, x) => {
+//     coordinateMap[item as ValidTreeThing] = { x, y }
+//   })
+// })
 
-const coordinateMap = {} as { [key in ValidTreeThing]: Coordinate }
+// export function getCoordinate(key: ValidTreeThing) {
+//   return coordinateMap[key]
+// }
 
-layout.forEach((row, y) => {
-  row.forEach((item, x) => {
-    coordinateMap[item as ValidTreeThing] = { x, y }
-  })
-})
-
-export function getCoordinate(key: ValidTreeThing) {
-  return coordinateMap[key]
-}
-
-export function getKeyboardKey(coordinate: Coordinate): ValidTreeThing | null {
-  try {
-    return layout[coordinate.y][coordinate.x] as ValidTreeThing
-  } catch (e) {
-    console.log('This coordinate does not map to a key...')
-    return null
-  }
-}
+// export function getKeyboardKey(coordinate: Coordinate): ValidTreeThing | null {
+//   try {
+//     return layout[coordinate.y][coordinate.x] as ValidTreeThing
+//   } catch (e) {
+//     console.log('This coordinate does not map to a key...')
+//     return null
+//   }
+// }
