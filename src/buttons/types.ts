@@ -22,12 +22,15 @@ export type ActionKey =
 
 export type ValidKeyboardKey = TabKey | ActionKey
 
-const validKeys = {
+const validTabKeys = {
   '1': true,
   '2': true,
   '3': true,
   '4': true,
-  '5': true,
+  '5': true
+}
+
+const validActionKeys = {
   q: true,
   w: true,
   e: true,
@@ -45,12 +48,26 @@ const validKeys = {
   b: true
 }
 
-// TODO: rename every "valid tree thing" to keyboardKey
-
-export const isValidKey = (key: string): key is ValidKeyboardKey => {
-  const runtimeCopy = { ...validKeys } as any
-  return !!runtimeCopy[key]
+const validKeys = {
+  ...validTabKeys,
+  ...validActionKeys
 }
+
+function isValidGenerator<T extends string>(
+  key: string,
+  keyMap: any
+): key is T {
+  return !!keyMap[key]
+}
+
+export const isValidTabKey = (key: string): key is TabKey =>
+  isValidGenerator(key, validTabKeys)
+
+export const isValidActionKey = (key: string): key is ActionKey =>
+  isValidGenerator(key, validActionKeys)
+
+export const isValidKey = (key: string): key is ValidKeyboardKey =>
+  isValidGenerator(key, validKeys)
 
 export enum ButtonType {
   Tab,

@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx'
-import { ActionButton, ButtonType } from '../buttons/types'
+import { ActionButton, ButtonType, ActionKey, TabKey } from '../buttons/types'
 import { mockData } from './data'
 import { getStores } from '.'
 
@@ -39,6 +39,15 @@ export default class ActionButtonsStore {
   get currentButtonsInTab() {
     return this.actionButtons.filter(
       button => button.tab === getStores().tabButtons.activeTabKey
+    )
+  }
+
+  public getButtonByKeyboardKey(
+    keyboardKey: ActionKey,
+    tab = getStores().tabButtons.activeTabKey
+  ): ActionButton | undefined {
+    return this.actionButtons.find(
+      button => button.keyboardKey === keyboardKey && button.tab === tab
     )
   }
 }

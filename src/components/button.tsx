@@ -3,6 +3,7 @@ import { ButtonBase } from '../buttons/types'
 import { fontFamily } from '../keyboard-tree/constants'
 import { getStores } from '../stores'
 import { Coordinate } from '../sounds/types'
+import { handleKeyPressOrClick } from '../keyboard-tree/tree-events'
 
 export interface ButtonsWithCoords extends ButtonBase {
   coords: Coordinate
@@ -28,6 +29,7 @@ const Button: React.SFC<Props> = ({ button }) => {
         fontSize: `${titleSize}px`,
         textAlign: `center`
       }}
+      onClick={() => handleKeyPressOrClick(button.keyboardKey)}
     >
       {button.title}
     </div>

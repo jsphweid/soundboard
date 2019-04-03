@@ -1,19 +1,15 @@
 import { getStores } from '../stores'
-import { ValidTreeThing } from './valid-tree-thing'
-import { KeyboardTreeType } from '../stores/keyboard-tree'
+import { ValidKeyboardKey, isValidTabKey } from '../buttons/types'
 
-export function handleKeyPressOrClick(key: ValidTreeThing) {
-  const { keyboardTree, soundPlayer } = getStores()
-  const thing = keyboardTree.currentTreeViewMap[key]
+export function handleKeyPressOrClick(key: ValidKeyboardKey) {
+  const { actionButtons, tabButtons, soundPlayer } = getStores()
 
-  if (!thing) {
-    console.log(`No item exists for ${key} on this tier.`)
-    return
-  }
-
-  if (thing.type === KeyboardTreeType.Branch) {
-    keyboardTree.goInto(key)
+  if (isValidTabKey(key)) {
+    tabButtons.changeTab(key)
   } else {
-    soundPlayer.triggerSound(thing.data.soundInfo.soundInfoId)
+    const button = actionButtons.getButtonByKeyboardKey(key)
+    if (button) {
+      soundPlayer.triggerSound(button.soundInfo.soundInfoId)
+    }
   }
 }

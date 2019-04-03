@@ -8,10 +8,11 @@ import LandscapeLayout from './landscape-layout'
 import ActiveLayout from './active-layout'
 import ActionButtons from './action-buttons'
 import TabButtons from './tab-buttons'
+import { createKeyboardListeners } from '../keyboard-tree/keyboard-listeners'
 
 let stores = initialize()
 
-// createKeyboardListeners()
+createKeyboardListeners()
 
 function initialize() {
   const soundPlayer = new SoundPlayerStore()
