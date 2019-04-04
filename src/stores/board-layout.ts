@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx'
 import { Dimensions } from '../components/board'
 import { ActionKey, TabKey } from '../buttons/types'
-import GridLookup from '../keyboard-tree/grid-lookup'
+import GridLookup from '../misc/grid-lookup'
 
 const hotkeys: ActionKey[][] = [
   ['q', 'w', 'e', 'r', 't'],

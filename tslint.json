@@ -11,6 +11,7 @@
     "jsx-no-lambda": false,
     "no-console": false,
     "no-var-requires": false,
-    "curly": false
+    "curly": false,
+    "ban-types": false
   }
 }

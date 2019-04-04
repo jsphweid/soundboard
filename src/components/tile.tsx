@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ValidKeyboardKey } from '../buttons/types'
-import { fontFamily } from '../keyboard-tree/constants'
 import { getStores } from '../stores'
+import { fontFamily } from '../misc/constants'
 
 interface Props {
   keyboardKey: ValidKeyboardKey

@@ -4,7 +4,10 @@ import { ValidKeyboardKey } from '../buttons/types'
 import { getStores } from '../stores'
 import BoardLayout from '../stores/board-layout'
 import Tile from './tile'
-import Button, { ButtonsWithCoords } from './button'
+import Button, { ButtonWithCoords } from './button'
+import Draggable, { DraggableData } from 'react-draggable'
+import { moveButton } from '../misc/helpers'
+import { handleKeyPressOrClick } from '../misc/events'
 
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
@@ -13,6 +16,7 @@ interface Props {}
 
 interface State {
   activeLayout: 'landscapeLayout' | 'portraitLayout'
+  buttonThatsBeingDragged: ButtonWithCoords | null // TODO: any...?
 }
 
 export interface Layout {
@@ -43,14 +47,61 @@ export interface Dimensions {
 
 @observer
 export default class Board extends React.Component<Props, State> {
+  private doubleClickWaiter: NodeJS.Timer | null = null
+
   constructor(props: Props) {
     super(props)
     this.state = {
-      activeLayout: 'landscapeLayout'
+      activeLayout: 'landscapeLayout',
+      buttonThatsBeingDragged: null
     }
   }
 
   private els: { board: any } = { board: null }
+
+  handleDragDrop = (e: any) => {
+    const { pageX, pageY } = e
+
+    const destination = getStores().activeLayout.getKeyAtPageCoordinate({
+      x: pageX,
+      y: pageY
+    })
+
+    const { buttonThatsBeingDragged } = this.state
+
+    if (destination && buttonThatsBeingDragged) {
+      moveButton(buttonThatsBeingDragged, destination)
+    }
+
+    this.setState({ buttonThatsBeingDragged: null })
+  }
+
+  handleDragStart = () => {
+    if (this.doubleClickWaiter) {
+      clearTimeout(this.doubleClickWaiter)
+    }
+  }
+
+  handleInitialDragStart = (e: any, button: ButtonWithCoords) => {
+    // Assumes that everything is a block of equal proportion...
+    const { blockWidth, blockHeight } = getStores().activeLayout
+    const x = Math.floor(e.pageX / blockWidth) * blockWidth
+    const y = Math.floor(e.pageY / blockHeight) * blockHeight
+
+    // waiting for double click, else it was legit single click
+    this.doubleClickWaiter = setTimeout(() => {
+      handleKeyPressOrClick(button.keyboardKey)
+      this.setState({ buttonThatsBeingDragged: null })
+    }, 100)
+
+    this.setState({
+      buttonThatsBeingDragged: { ...button, coords: { x, y } }
+    })
+  }
+
+  handleDrag = () => {
+    // TODO: add hover over tab makes it active
+  }
 
   handleResize = (size: { width: number }) => {
     const activeLayout = size.width > 800 ? 'landscapeLayout' : 'portraitLayout'
@@ -71,24 +122,38 @@ export default class Board extends React.Component<Props, State> {
   private renderKeysSection(
     section: LayoutSection,
     keyboardKeys: ValidKeyboardKey[][],
-    buttonsWithCoords: ButtonsWithCoords[]
+    buttonsWithCoords: ButtonWithCoords[]
   ) {
     const tiles = keyboardKeys
       .flat()
       .map(tileKey => <Tile key={`tab-${tileKey}`} keyboardKey={tileKey} />)
 
-    const buttons = buttonsWithCoords.map(button => {
-      return <Button key={`button-${button.keyboardKey}`} button={button} />
-    })
+    const { buttonThatsBeingDragged } = this.state
+
+    const buttons = buttonsWithCoords
+      .filter(button =>
+        buttonThatsBeingDragged
+          ? buttonThatsBeingDragged.id !== button.id
+          : true
+      )
+      .map(button => {
+        return (
+          <Button
+            key={`button${button.id}`}
+            button={button}
+            onClick={(e: any) => this.handleInitialDragStart(e, button)}
+          />
+        )
+      })
     return (
       <div
         style={{
-          backgroundColor: 'blue',
           height: `${section.height}px`,
           width: `${section.width}px`,
           left: `${section.x}px`,
           top: `${section.y}px`,
-          position: 'absolute'
+          position: 'absolute',
+          display: 'block'
         }}
       >
         {tiles}
@@ -97,15 +162,38 @@ export default class Board extends React.Component<Props, State> {
     )
   }
 
+  private renderButtonBeingDragged() {
+    const button = this.state.buttonThatsBeingDragged
+    if (!button) return null
+    return (
+      <Draggable
+        key={`button-${button.id}`}
+        bounds="parent"
+        position={{ x: 0, y: 0 }}
+        onDrag={this.handleDrag}
+        onStart={this.handleDragStart}
+        onStop={this.handleDragDrop}
+      >
+        <Button button={button} selected={true} />
+      </Draggable>
+    )
+  }
+
   private renderTabKeysSection() {
     const { activeLayout, tabButtons } = getStores()
     return this.renderKeysSection(
       activeLayout.tabKeysSection,
       BoardLayout.tabs,
-      tabButtons.tabs.map(button => ({
-        coords: BoardLayout.tabsGridLookup.getCoordsFromkey(button.keyboardKey),
-        ...button
-      }))
+      tabButtons.tabs.map(button => {
+        const { blockWidth, blockHeight } = activeLayout
+        const { x, y } = BoardLayout.tabsGridLookup.getCoordsFromkey(
+          button.keyboardKey
+        )
+        return {
+          coords: { x: blockWidth * x, y: blockHeight * y },
+          ...button
+        }
+      })
     )
   }
 
@@ -114,12 +202,16 @@ export default class Board extends React.Component<Props, State> {
     return this.renderKeysSection(
       activeLayout.actionKeysSection,
       BoardLayout.hotkeys,
-      actionButtons.currentButtonsInTab.map(button => ({
-        coords: BoardLayout.hotkeysGridLookup.getCoordsFromkey(
+      actionButtons.currentButtonsInTab.map(button => {
+        const { blockWidth, blockHeight } = activeLayout
+        const { x, y } = BoardLayout.hotkeysGridLookup.getCoordsFromkey(
           button.keyboardKey
-        ),
-        ...button
-      }))
+        )
+        return {
+          coords: { x: blockWidth * x, y: blockHeight * y },
+          ...button
+        }
+      })
     )
   }
 
@@ -148,12 +240,14 @@ export default class Board extends React.Component<Props, State> {
         ref={(el: any) => (this.els.board = el)}
         onlyEvent={true}
         onResize={this.handleResize}
+        id="sb-board"
         style={{
           position: 'relative',
-          width: '100%',
-          height: `100%`
+          width: '100vw',
+          height: `100vh`
         }}
       >
+        {this.renderButtonBeingDragged()}
         {this.renderActionKeysSection()}
         {this.renderTabKeysSection()}
         {this.renderMenuSection()}

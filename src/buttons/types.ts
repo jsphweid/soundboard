@@ -81,6 +81,7 @@ export interface ButtonBase<
   type: Type
   title: string
   keyboardKey: KeyboardKey
+  id: string
 }
 
 export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
@@ -88,4 +89,12 @@ export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
   tab: TabKey
 }
 
+export function isActionButton(button: ButtonBase): button is ActionButton {
+  return button.type === ButtonType.Action
+}
+
 export interface TabButton extends ButtonBase<ButtonType.Tab, TabKey> {}
+
+export function isTabButton(button: ButtonBase): button is TabButton {
+  return button.type === ButtonType.Tab
+}

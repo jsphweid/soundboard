@@ -1,14 +1,12 @@
 import { observable } from 'mobx'
 import SoundPlayerStore from './sound-player'
-import KeyboardTreeStore from './keyboard-tree'
-// import { createKeyboardListeners } from '../keyboard-tree/keyboard-listeners'
 import BoardLayout from './board-layout'
 import PortraitLayout from './portrait-layout'
 import LandscapeLayout from './landscape-layout'
 import ActiveLayout from './active-layout'
 import ActionButtons from './action-buttons'
 import TabButtons from './tab-buttons'
-import { createKeyboardListeners } from '../keyboard-tree/keyboard-listeners'
+import { createKeyboardListeners } from '../misc/keyboard-listeners'
 
 let stores = initialize()
 
@@ -16,7 +14,6 @@ createKeyboardListeners()
 
 function initialize() {
   const soundPlayer = new SoundPlayerStore()
-  const keyboardTree = new KeyboardTreeStore()
   const boardLayout = new BoardLayout()
   const landscapeLayout = new LandscapeLayout()
   const portraitLayout = new PortraitLayout()
@@ -26,7 +23,6 @@ function initialize() {
 
   return observable({
     soundPlayer,
-    keyboardTree,
     boardLayout,
     landscapeLayout,
     portraitLayout,

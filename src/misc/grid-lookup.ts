@@ -18,11 +18,11 @@ export default class GridLookup<T extends string> {
     this.keyToCoordMap = ret
   }
 
-  public getCoordsFromkey(key: T): Coordinate {
+  public getCoordsFromkey = (key: T): Coordinate => {
     return this.keyToCoordMap[key]
   }
 
-  public getKeyFromCoords({ x, y }: Coordinate): T {
+  public getKeyFromCoords = ({ x, y }: Coordinate): T => {
     return this.originalGrid[y][x]
   }
 }
