@@ -108,6 +108,7 @@ export default class Board extends React.Component<Props, State> {
   }
 
   handleResize = (size: { width: number }) => {
+    if (!size.width) return
     const activeLayout = size.width > 800 ? 'landscapeLayout' : 'portraitLayout'
     this.setState({ activeLayout })
 
