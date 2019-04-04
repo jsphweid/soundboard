@@ -10,7 +10,7 @@ export default class ActionButtonsStore {
       title: `airhorn`,
       type: ButtonType.Action,
       keyboardKey: 'q',
-      tab: '1',
+      tabId: 'tab1',
       id: 'action1'
     },
     {
@@ -18,7 +18,7 @@ export default class ActionButtonsStore {
       title: `wolololo`,
       type: ButtonType.Action,
       keyboardKey: 'w',
-      tab: '1',
+      tabId: 'tab1',
       id: 'action2'
     },
     {
@@ -26,7 +26,7 @@ export default class ActionButtonsStore {
       title: `laugh`,
       type: ButtonType.Action,
       keyboardKey: 'a',
-      tab: '2',
+      tabId: 'tab2',
       id: 'action3'
     },
     {
@@ -34,7 +34,7 @@ export default class ActionButtonsStore {
       title: `jeopardy`,
       type: ButtonType.Action,
       keyboardKey: 'b',
-      tab: '3',
+      tabId: 'tab3',
       id: 'action4'
     }
   ]
@@ -42,7 +42,7 @@ export default class ActionButtonsStore {
   @computed
   get currentButtonsInTab() {
     return this.actionButtons.filter(
-      button => button.tab === getStores().tabButtons.activeTabKey
+      button => button.tabId === getStores().tabButtons.activeTabId
     )
   }
 
@@ -57,11 +57,11 @@ export default class ActionButtonsStore {
       transaction(() => {
         if (destinationIndex > -1) {
           this.actionButtons[destinationIndex].keyboardKey = button.keyboardKey
-          this.actionButtons[destinationIndex].tab = button.tab
+          this.actionButtons[destinationIndex].tabId = button.tabId
         }
         this.actionButtons[
           sourceIndex
-        ].tab = getStores().tabButtons.activeTabKey
+        ].tabId = getStores().tabButtons.activeTabId
         this.actionButtons[sourceIndex].keyboardKey = destination
       })
     }
@@ -69,10 +69,14 @@ export default class ActionButtonsStore {
 
   public getButtonByKeyboardKey(
     keyboardKey: ActionKey,
-    tab = getStores().tabButtons.activeTabKey
+    tabId = getStores().tabButtons.activeTabId
   ): ActionButton | undefined {
     return this.actionButtons.find(
-      button => button.keyboardKey === keyboardKey && button.tab === tab
+      button => button.keyboardKey === keyboardKey && button.tabId === tabId
     )
+  }
+
+  public deleteButton(buttonId: string) {
+    this.actionButtons = this.actionButtons.filter(b => b.id !== buttonId)
   }
 }

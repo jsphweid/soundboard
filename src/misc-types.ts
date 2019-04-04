@@ -1,5 +1,5 @@
 export enum SoundInfoTypes {
-  UrlSound
+  UrlSound = 'Audio URL'
 }
 
 interface BaseSoundInfo {

@@ -1,13 +1,14 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import { ValidKeyboardKey } from '../buttons/types'
+import { ValidKeyboardKey, isValidActionKey } from '../buttons/types'
 import { getStores } from '../stores'
 import BoardLayout from '../stores/board-layout'
 import Tile from './tile'
 import Button, { ButtonWithCoords } from './button'
-import Draggable, { DraggableData } from 'react-draggable'
+import Draggable from 'react-draggable'
 import { moveButton } from '../misc/helpers'
 import { handleKeyPressOrClick } from '../misc/events'
+import Menu from './menu'
 
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
@@ -60,17 +61,20 @@ export default class Board extends React.Component<Props, State> {
   private els: { board: any } = { board: null }
 
   handleDragDrop = (e: any) => {
-    const { pageX, pageY } = e
-
-    const destination = getStores().activeLayout.getKeyAtPageCoordinate({
-      x: pageX,
-      y: pageY
-    })
-
     const { buttonThatsBeingDragged } = this.state
+    if (!buttonThatsBeingDragged) return
+    const { getKeyAtPageCoordinate, isTrashDrag } = getStores().activeLayout
+    const { pageX, pageY } = e
+    const point = { x: pageX, y: pageY }
 
-    if (destination && buttonThatsBeingDragged) {
+    const destination = getKeyAtPageCoordinate(point)
+    if (destination) {
       moveButton(buttonThatsBeingDragged, destination)
+    } else if (
+      isTrashDrag(point) &&
+      isValidActionKey(buttonThatsBeingDragged.keyboardKey)
+    ) {
+      getStores().actionButtons.deleteButton(buttonThatsBeingDragged.id)
     }
 
     this.setState({ buttonThatsBeingDragged: null })
@@ -229,7 +233,7 @@ export default class Board extends React.Component<Props, State> {
           position: 'absolute'
         }}
       >
-        {/* menu */}
+        <Menu />
       </div>
     )
   }

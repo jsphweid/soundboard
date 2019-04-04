@@ -77,8 +77,9 @@ export default class ActiveLayout implements Layout {
     return this.keyboardKeySize * 0.3
   }
 
-  getKeyAtPageCoordinate(point: Coordinate) {
+  getKeyAtPageCoordinate = (point: Coordinate) => {
     const { tabKeysSection, actionKeysSection } = this.activeLayout
+
     if (pointInSection(tabKeysSection, point)) {
       const adjustedCoords = {
         x: point.x - tabKeysSection.x,
@@ -112,5 +113,9 @@ export default class ActiveLayout implements Layout {
     } else {
       console.log('Point was outside of everything the board knows about...')
     }
+  }
+
+  isTrashDrag = (point: Coordinate) => {
+    return pointInSection(getStores().activeLayout.menuSection, point)
   }
 }

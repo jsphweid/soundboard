@@ -86,7 +86,7 @@ export interface ButtonBase<
 
 export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
   soundInfo: SoundInfo
-  tab: TabKey
+  tabId: string
 }
 
 export function isActionButton(button: ButtonBase): button is ActionButton {

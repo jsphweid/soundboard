@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ButtonBase } from '../buttons/types'
+import { ButtonBase, isTabButton } from '../buttons/types'
 import { getStores } from '../stores'
 import { Coordinate } from '../sounds/types'
 import { fontFamily } from '../misc/constants'
@@ -35,6 +35,15 @@ const Button: React.SFC<Props> = ({
   selected
 }) => {
   const { blockWidth, blockHeight, titleSize } = getStores().activeLayout
+  const { activeTabId } = getStores().tabButtons
+  const highlightedStyles =
+    isTabButton(button) && button.id === activeTabId
+      ? {
+          border: '7px solid black',
+          width: `${blockWidth - 13}px`,
+          height: `${blockHeight - 13}px`
+        }
+      : {}
   return (
     <div
       {...{ className, onTouchEnd, onTouchStart, onMouseDown, onMouseUp }}
@@ -50,7 +59,8 @@ const Button: React.SFC<Props> = ({
         border: '0.5px solid black',
         fontFamily,
         fontSize: `${titleSize}px`,
-        textAlign: `center`
+        textAlign: `center`,
+        ...highlightedStyles
       }}
       onClick={onClick}
     >
