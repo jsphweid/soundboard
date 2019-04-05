@@ -1,10 +1,36 @@
-import { observable, computed, action, transaction } from 'mobx'
+import {
+  observable,
+  computed,
+  action,
+  transaction,
+  autorun,
+  reaction
+} from 'mobx'
 import { ActionButton, ButtonType, ActionKey, TabKey } from '../buttons/types'
 import { mockData } from './data'
 import { getStores } from '.'
+import { makeSoundFromSoundInfo } from './sound-player'
 
 export default class ActionButtonsStore {
-  @observable private actionButtons: ActionButton[] = [
+  constructor() {
+    const reaction1 = reaction(
+      () => this.actionButtons.length,
+      len => {
+        const { soundMap } = getStores().soundPlayer
+        // only adds buttons... memory overflow...!?!
+        this.actionButtons.forEach(({ soundInfo }) => {
+          const sound = soundMap.get(soundInfo.soundInfoId)
+          if (!sound) {
+            soundMap.set(
+              soundInfo.soundInfoId,
+              makeSoundFromSoundInfo(soundInfo)
+            )
+          }
+        })
+      }
+    )
+  }
+  @observable actionButtons: ActionButton[] = [
     {
       soundInfo: mockData[0].soundInfo,
       title: `airhorn`,
@@ -38,6 +64,11 @@ export default class ActionButtonsStore {
       id: 'action4'
     }
   ]
+
+  @action
+  addButton = (button: ActionButton) => {
+    this.actionButtons.push(button)
+  }
 
   @computed
   get currentButtonsInTab() {

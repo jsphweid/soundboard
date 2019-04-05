@@ -50,3 +50,21 @@ export function moveButton(button: ButtonBase, destination: ValidKeyboardKey) {
     'An action key can only be moved to a valid action key tile. A tab key can only be moved to valid tab key tile.'
   )
 }
+
+export interface DropdownOption {
+  label: string
+  value: string
+}
+
+export function enumToArray(Enum: any): DropdownOption[] {
+  return Object.keys(Enum).map(key => ({ label: Enum[key], value: key }))
+}
+
+export function enumOptionToDropdownOption(
+  EnumOpt: any,
+  Enum: any
+): DropdownOption {
+  return enumToArray(Enum).find(
+    item => item.label === EnumOpt
+  ) as DropdownOption
+}

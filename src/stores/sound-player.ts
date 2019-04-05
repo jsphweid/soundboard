@@ -3,15 +3,14 @@ import { SoundInfo, SoundInfoTypes } from '../misc-types'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
 import { mockData } from './data'
+import { getStores } from '.'
 
-function makeSoundFromSoundInfo(soundInfo: SoundInfo): Sound {
+export function makeSoundFromSoundInfo(soundInfo: SoundInfo): Sound {
   switch (soundInfo.type) {
     case SoundInfoTypes.UrlSound:
       return new URLSound(soundInfo.url)
   }
 }
-
-// TODO: get rid of soundId and use use main ID?
 
 export default class SoundPlayer {
   @observable soundMap = new Map<string, Sound>()

@@ -7,6 +7,7 @@ import ActiveLayout from './active-layout'
 import ActionButtons from './action-buttons'
 import TabButtons from './tab-buttons'
 import { createKeyboardListeners } from '../misc/keyboard-listeners'
+import ButtonCreator from './button-creator'
 
 let stores = initialize()
 
@@ -20,6 +21,7 @@ function initialize() {
   const activeLayout = new ActiveLayout()
   const actionButtons = new ActionButtons()
   const tabButtons = new TabButtons()
+  const buttonCreator = new ButtonCreator()
 
   return observable({
     soundPlayer,
@@ -28,7 +30,8 @@ function initialize() {
     portraitLayout,
     activeLayout,
     actionButtons,
-    tabButtons
+    tabButtons,
+    buttonCreator
   })
 }
 

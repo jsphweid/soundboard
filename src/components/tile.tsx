@@ -1,17 +1,32 @@
 import * as React from 'react'
-import { ValidKeyboardKey } from '../buttons/types'
+import { ValidKeyboardKey, isValidActionKey } from '../buttons/types'
 import { getStores } from '../stores'
 import { fontFamily } from '../misc/constants'
+import ButtonCreatorForm from './button-creation/form'
+import { observer } from 'mobx-react'
 
 interface Props {
   keyboardKey: ValidKeyboardKey
 }
 
-const Tile: React.SFC<Props> = ({ keyboardKey }) => {
+const Tile: React.SFC<Props> = observer(({ keyboardKey }) => {
   const { blockWidth, blockHeight, keyboardKeySize } = getStores().activeLayout
+  const { activeTabId } = getStores().tabButtons
+  const { registerCreator, tileWithButtonCreator } = getStores().buttonCreator
+  const creator =
+    tileWithButtonCreator &&
+    tileWithButtonCreator.tabId === activeTabId &&
+    tileWithButtonCreator.keyboardKey === keyboardKey ? (
+      <ButtonCreatorForm />
+    ) : null
+
+  const onDoubleClick = isValidActionKey(keyboardKey)
+    ? () => registerCreator(keyboardKey)
+    : undefined
 
   return (
     <div
+      onDoubleClick={onDoubleClick}
       key={`tile-${keyboardKey}`}
       style={{
         backgroundColor: 'grey',
@@ -19,10 +34,10 @@ const Tile: React.SFC<Props> = ({ keyboardKey }) => {
         height: blockHeight,
         float: 'left',
         position: 'relative',
-        pointerEvents: 'none',
         textAlign: 'center'
       }}
     >
+      {creator}
       <div
         style={{
           position: `absolute`,
@@ -38,6 +53,6 @@ const Tile: React.SFC<Props> = ({ keyboardKey }) => {
       </div>
     </div>
   )
-}
+})
 
 export default Tile
