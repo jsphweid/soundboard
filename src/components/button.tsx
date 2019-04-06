@@ -3,6 +3,7 @@ import { ButtonBase, isTabButton } from '../buttons/types'
 import { getStores } from '../stores'
 import { Coordinate } from '../sounds/types'
 import { fontFamily } from '../misc/constants'
+import { action } from 'mobx'
 
 export interface ButtonWithCoords extends ButtonBase {
   coords: Coordinate
@@ -44,6 +45,19 @@ const Button: React.SFC<Props> = ({
           height: `${blockHeight - 13}px`
         }
       : {}
+
+  function renderContents() {
+    const actionButton = getStores().actionButtons.actionButtons.get(button.id)
+    return actionButton ? (
+      <div>
+        {button.title}
+        {actionButton.player}
+      </div>
+    ) : (
+      <div>{button.title}</div>
+    )
+  }
+
   return (
     <div
       {...{ className, onTouchEnd, onTouchStart, onMouseDown, onMouseUp }}
@@ -64,7 +78,7 @@ const Button: React.SFC<Props> = ({
       }}
       onClick={onClick}
     >
-      {button.title}
+      {renderContents()}
     </div>
   )
 }

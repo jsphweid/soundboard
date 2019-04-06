@@ -1,4 +1,4 @@
-import { SoundInfo } from '../misc-types'
+import ReactPlayer, { ReactPlayerProps } from 'react-player'
 
 // TODO: How do you not have to do this...?
 
@@ -85,8 +85,14 @@ export interface ButtonBase<
 }
 
 export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
-  soundInfo: SoundInfo
   tabId: string
+  url: string
+  startSeconds?: number | null
+  endSeconds?: number | null
+  player?: any
+  ref?: any
+  playing?: boolean
+  reactPlayerProps?: Partial<ReactPlayerProps>
 }
 
 export function isActionButton(button: ButtonBase): button is ActionButton {

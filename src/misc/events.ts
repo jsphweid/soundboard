@@ -2,7 +2,7 @@ import { getStores } from '../stores'
 import { ValidKeyboardKey, isValidTabKey } from '../buttons/types'
 
 export function handleKeyPressOrClick(key: ValidKeyboardKey) {
-  const { actionButtons, tabButtons, soundPlayer } = getStores()
+  const { actionButtons, tabButtons } = getStores()
 
   if (isValidTabKey(key)) {
     const button = tabButtons.getButtonByKeyboardKey(key)
@@ -12,7 +12,7 @@ export function handleKeyPressOrClick(key: ValidKeyboardKey) {
   } else {
     const button = actionButtons.getButtonByKeyboardKey(key)
     if (button) {
-      soundPlayer.triggerSound(button.soundInfo.soundInfoId)
+      console.log(button.player.getDuration())
     }
   }
 }
