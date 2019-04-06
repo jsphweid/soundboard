@@ -6,18 +6,20 @@ export default class URLSound implements Sound {
     this.audioElement = new Audio(url)
   }
 
+  private stopAndRestart() {
+    this.audioElement.pause()
+    this.audioElement.currentTime = 0
+  }
+
   public trigger() {
-    const { audioElement } = this
-    if (!audioElement.paused) {
-      audioElement.pause()
-      audioElement.currentTime = 0
+    if (!this.audioElement.paused) {
+      this.stopAndRestart()
     }
-    return Promise.resolve(audioElement.play())
+    return Promise.resolve(this.audioElement.play())
   }
 
   public stop() {
-    console.log('implement me')
-    return Promise.resolve()
+    return Promise.resolve(this.stopAndRestart())
   }
 
   public prime() {

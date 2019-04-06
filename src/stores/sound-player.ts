@@ -34,4 +34,9 @@ export default class SoundPlayer {
     }
     sound.trigger()
   }
+
+  @action
+  killAllSounds = () => {
+    Array.from(this.soundMap.values()).forEach(sound => sound.stop())
+  }
 }
