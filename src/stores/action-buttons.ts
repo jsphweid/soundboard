@@ -7,13 +7,15 @@ import {
   reaction
 } from 'mobx'
 import { ActionButton, ButtonType, ActionKey, TabKey } from '../buttons/types'
-import { mockData } from './data'
+import { mockData, mockYoutubeData } from './data'
 import { getStores } from '.'
 import { makeSoundFromSoundInfo } from './sound-player'
+import { makeRandomId } from '../misc/helpers'
 
 export default class ActionButtonsStore {
   constructor() {
-    const reaction1 = reaction(
+    // sync soundplay buttons
+    reaction(
       () => this.actionButtons.length,
       len => {
         const { soundMap } = getStores().soundPlayer
@@ -37,7 +39,7 @@ export default class ActionButtonsStore {
       type: ButtonType.Action,
       keyboardKey: 'q',
       tabId: 'tab1',
-      id: 'action1'
+      id: makeRandomId()
     },
     {
       soundInfo: mockData[1].soundInfo,
@@ -45,7 +47,7 @@ export default class ActionButtonsStore {
       type: ButtonType.Action,
       keyboardKey: 'w',
       tabId: 'tab1',
-      id: 'action2'
+      id: makeRandomId()
     },
     {
       soundInfo: mockData[2].soundInfo,
@@ -53,7 +55,7 @@ export default class ActionButtonsStore {
       type: ButtonType.Action,
       keyboardKey: 'a',
       tabId: 'tab2',
-      id: 'action3'
+      id: makeRandomId()
     },
     {
       soundInfo: mockData[3].soundInfo,
@@ -61,7 +63,15 @@ export default class ActionButtonsStore {
       type: ButtonType.Action,
       keyboardKey: 'b',
       tabId: 'tab3',
-      id: 'action4'
+      id: makeRandomId()
+    },
+    {
+      soundInfo: mockYoutubeData[0].soundInfo,
+      title: `evil morty`,
+      type: ButtonType.Action,
+      keyboardKey: `r`,
+      tabId: 'tab1',
+      id: makeRandomId()
     }
   ]
 

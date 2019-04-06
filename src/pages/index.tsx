@@ -7,5 +7,6 @@ import './react-contextmenu.css'
 export default () => (
   <div className="prevent-selection">
     <Board />
+    <div id="player" />
   </div>
 )

@@ -1,5 +1,6 @@
 import { SoundInfoTypes } from '../misc-types'
 import md5 from 'blueimp-md5'
+import { makeRandomId } from '../misc/helpers'
 
 // move this to helper eventually
 function makeMd5(obj: { type: SoundInfoTypes; url: string }): string {
@@ -30,5 +31,23 @@ export const mockData = [
     type: SoundInfoTypes.UrlSound,
     url,
     soundInfoId: makeMd5({ type: SoundInfoTypes.UrlSound, url })
+  }
+}))
+
+export const mockYoutubeData = [
+  {
+    title: 'evil morty',
+    url: 'https://www.youtube.com/watch?v=Bk3lknaWI9Q',
+    startSeconds: 37,
+    endSeconds: 40
+  }
+].map(({ title, url, startSeconds, endSeconds }) => ({
+  title,
+  soundInfo: {
+    type: SoundInfoTypes.Youtube,
+    url,
+    startSeconds,
+    endSeconds,
+    soundInfoId: makeRandomId()
   }
 }))

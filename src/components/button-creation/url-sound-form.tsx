@@ -2,8 +2,8 @@ import * as React from 'react'
 import { getStores } from '../../stores'
 import { ButtonType } from '../../buttons/types'
 import { SoundInfoTypes } from '../../misc-types'
-import { v4 as uuidGen } from 'uuid'
 import { TileIdentifier } from '../../stores/button-creator'
+import { makeRandomId } from '../../misc/helpers'
 
 interface Props {}
 
@@ -37,11 +37,11 @@ export default class UrlSoundForm extends React.Component<Props, State> {
               soundInfo: {
                 url,
                 type: SoundInfoTypes.UrlSound,
-                soundInfoId: uuidGen()
+                soundInfoId: makeRandomId()
               },
               title,
               type: ButtonType.Action,
-              id: uuidGen(),
+              id: makeRandomId(),
               tabId,
               keyboardKey
             })

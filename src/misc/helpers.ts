@@ -9,6 +9,7 @@ import {
   isTabButton
 } from '../buttons/types'
 import { getStores } from '../stores'
+import { v4 as uuidGen } from 'uuid'
 
 export function determineTileCoordsFromXY(
   boardDetails: {
@@ -67,4 +68,8 @@ export function enumOptionToDropdownOption(
   return enumToArray(Enum).find(
     item => item.label === EnumOpt
   ) as DropdownOption
+}
+
+export function makeRandomId() {
+  return uuidGen()
 }
