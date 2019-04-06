@@ -10,6 +10,19 @@ interface Props {}
 interface State {
   url: string
   title: string
+  error: string | null
+}
+
+function audioUrlIsValid(url: string): Promise<boolean> {
+  const audio = new Audio(url)
+  audio.volume = 0
+  return audio
+    .play()
+    .then(() => {
+      audio.pause()
+      return true
+    })
+    .catch(() => false)
 }
 
 export default class UrlSoundForm extends React.Component<Props, State> {
@@ -18,7 +31,17 @@ export default class UrlSoundForm extends React.Component<Props, State> {
 
     this.state = {
       title: '',
-      url: ''
+      url: '',
+      error: null
+    }
+  }
+
+  public componentDidUpdate(_: any, previousState: State) {
+    if (
+      previousState.error &&
+      JSON.stringify(previousState.error) === JSON.stringify(this.state.error)
+    ) {
+      this.setState({ error: null })
     }
   }
 
@@ -32,7 +55,19 @@ export default class UrlSoundForm extends React.Component<Props, State> {
     return (
       <div>
         <button
-          onClick={() => {
+          onClick={async () => {
+            const isValid = await audioUrlIsValid(url)
+
+            if (!isValid) {
+              this.setState({ error: 'Invalid audio URL.' })
+              return
+            }
+
+            if (!title) {
+              this.setState({ error: 'Please enter a title.' })
+              return
+            }
+
             addButton({
               soundInfo: {
                 url,
@@ -70,6 +105,7 @@ export default class UrlSoundForm extends React.Component<Props, State> {
           onChange={e => this.setState({ title: e.target.value })}
           placeholder={'title'}
         />
+        {this.state.error}
         {this.renderSaveCancel()}
       </div>
     )

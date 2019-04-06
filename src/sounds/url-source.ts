@@ -7,7 +7,12 @@ export default class URLSound implements Sound {
   }
 
   public trigger() {
-    return Promise.resolve(this.audioElement.play())
+    const { audioElement } = this
+    if (!audioElement.paused) {
+      audioElement.pause()
+      audioElement.currentTime = 0
+    }
+    return Promise.resolve(audioElement.play())
   }
 
   public stop() {

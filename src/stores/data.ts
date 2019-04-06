@@ -1,6 +1,5 @@
 import { SoundInfoTypes } from '../misc-types'
 import md5 from 'blueimp-md5'
-import { makeRandomId } from '../misc/helpers'
 
 // move this to helper eventually
 function makeMd5(obj: { type: SoundInfoTypes; url: string }): string {
