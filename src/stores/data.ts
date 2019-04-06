@@ -33,21 +33,3 @@ export const mockData = [
     soundInfoId: makeMd5({ type: SoundInfoTypes.UrlSound, url })
   }
 }))
-
-export const mockYoutubeData = [
-  {
-    title: 'evil morty',
-    url: 'https://www.youtube.com/watch?v=Bk3lknaWI9Q',
-    startSeconds: 37,
-    endSeconds: 40
-  }
-].map(({ title, url, startSeconds, endSeconds }) => ({
-  title,
-  soundInfo: {
-    type: SoundInfoTypes.Youtube,
-    url,
-    startSeconds,
-    endSeconds,
-    soundInfoId: makeRandomId()
-  }
-}))

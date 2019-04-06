@@ -7,7 +7,7 @@ import {
   reaction
 } from 'mobx'
 import { ActionButton, ButtonType, ActionKey, TabKey } from '../buttons/types'
-import { mockData, mockYoutubeData } from './data'
+import { mockData } from './data'
 import { getStores } from '.'
 import { makeSoundFromSoundInfo } from './sound-player'
 import { makeRandomId } from '../misc/helpers'
@@ -63,14 +63,6 @@ export default class ActionButtonsStore {
       type: ButtonType.Action,
       keyboardKey: 'b',
       tabId: 'tab3',
-      id: makeRandomId()
-    },
-    {
-      soundInfo: mockYoutubeData[0].soundInfo,
-      title: `evil morty`,
-      type: ButtonType.Action,
-      keyboardKey: `r`,
-      tabId: 'tab1',
       id: makeRandomId()
     }
   ]
