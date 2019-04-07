@@ -83,7 +83,6 @@ export interface ButtonBase<
 }
 
 export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
-  soundInfo: SoundInfo
   tabId: string
   url: string
   start: number

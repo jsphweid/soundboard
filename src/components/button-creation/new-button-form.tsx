@@ -5,21 +5,8 @@ import { TileIdentifier } from '../../stores/button-creator'
 import { makeRandomId } from '../../misc/helpers'
 
 import { Form, Field } from 'react-final-form'
-import { TextField, Checkbox, Radio, Select } from 'final-form-material-ui'
-import {
-  Typography,
-  Paper,
-  Link,
-  Grid,
-  Button,
-  CssBaseline,
-  RadioGroup,
-  FormLabel,
-  MenuItem,
-  FormGroup,
-  FormControl,
-  FormControlLabel
-} from '@material-ui/core'
+import { Paper, Grid, Button, CssBaseline } from '@material-ui/core'
+import TextField from './text-field'
 
 function audioUrlIsValid(url: string): Promise<boolean> {
   const audio = new Audio(url)
@@ -51,6 +38,7 @@ const handleSave = ({ url, title, start, end }: any) => {
   const { tileWithButtonCreator, cancel } = getStores().buttonCreator
   const { addButton } = getStores().actionButtons
   const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
+  console.log('saving..')
   addButton({
     url,
     start,
