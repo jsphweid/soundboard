@@ -63,6 +63,7 @@ export default class Board extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    debugger
     this.handleResize({
       width: this.els.board.clientWidth
     })
