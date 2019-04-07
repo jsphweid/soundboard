@@ -8,7 +8,7 @@ export default class ActionButtonsStore {
   constructor() {
     // sync soundplay buttons
     reaction(
-      () => this.actionButtons.length,
+      () => JSON.stringify(this.actionButtons),
       () => {
         const { soundMap } = getStores().soundPlayer
         // only adds buttons... memory overflow...!?!

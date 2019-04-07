@@ -38,7 +38,6 @@ const handleSave = ({ url, title, start, end }: any) => {
   const { tileWithButtonCreator, cancel } = getStores().buttonCreator
   const { addButton } = getStores().actionButtons
   const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
-  console.log('saving..')
   addButton({
     url,
     start,
