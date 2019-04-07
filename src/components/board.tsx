@@ -1,6 +1,11 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import { ValidKeyboardKey, isValidActionKey } from '../buttons/types'
+import {
+  ValidKeyboardKey,
+  isValidActionKey,
+  isTabButton,
+  isValidTabKey
+} from '../buttons/types'
 import { getStores } from '../stores'
 import BoardLayout from '../stores/board-layout'
 import Tile from './tile'
@@ -21,6 +26,7 @@ interface Props {}
 interface State {
   activeLayout: 'landscapeLayout' | 'portraitLayout'
   buttonThatsBeingDragged: ButtonWithCoords | null // TODO: any...?
+  everythingLoaded: boolean
 }
 
 export interface Layout {
@@ -58,22 +64,26 @@ export default class Board extends React.Component<Props, State> {
     super(props)
     this.state = {
       activeLayout: 'landscapeLayout',
-      buttonThatsBeingDragged: null
+      buttonThatsBeingDragged: null,
+      everythingLoaded: false
     }
   }
 
   componentDidMount() {
-    debugger
     this.handleResize({
       width: this.els.board.clientWidth
     })
     const query = QueryString.parse(location.search)
     if (query.board) {
-      Axios.get(`${apiBaseUrl}/${query.board}`).then(response => {
-        getStores().actionButtons.reloadEverythingFromValidJSON(
-          response.data.board
-        )
-      })
+      Axios.get(`${apiBaseUrl}/${query.board}`)
+        .then(response => {
+          getStores().actionButtons.reloadEverythingFromValidJSON(
+            response.data.board
+          )
+        })
+        .finally(() => this.setState({ everythingLoaded: true }))
+    } else {
+      this.setState({ everythingLoaded: true })
     }
   }
 
@@ -161,8 +171,15 @@ export default class Board extends React.Component<Props, State> {
           />
         )
       })
+
+    const key =
+      keyboardKeys.length && isValidTabKey(keyboardKeys[0][0])
+        ? 'tab-section'
+        : 'action-section'
+
     return (
       <div
+        key={key}
         style={{
           height: `${section.height}px`,
           width: `${section.width}px`,
@@ -235,6 +252,7 @@ export default class Board extends React.Component<Props, State> {
     const { height, width, x, y } = getStores().activeLayout.menuSection
     return (
       <div
+        key="menu"
         style={{
           backgroundColor: 'grey',
           height: `${height}px`,
@@ -251,6 +269,22 @@ export default class Board extends React.Component<Props, State> {
   }
 
   public render() {
+    const content =
+      this.state.everythingLoaded &&
+      getStores().activeLayout.blockHeight > 5 ? (
+        [
+          this.renderButtonBeingDragged(),
+          this.renderActionKeysSection(),
+          this.renderTabKeysSection(),
+          this.renderMenuSection()
+        ]
+      ) : (
+        <div
+          style={{ backgroundColor: 'grey', width: '100vw', height: `100vh` }}
+        >
+          <h1 style={{ fontSize: `80px` }}>Loading...</h1>
+        </div>
+      )
     return (
       <ResizeAware
         ref={(el: any) => (this.els.board = el)}
@@ -263,10 +297,7 @@ export default class Board extends React.Component<Props, State> {
           height: `100vh`
         }}
       >
-        {this.renderButtonBeingDragged()}
-        {this.renderActionKeysSection()}
-        {this.renderTabKeysSection()}
-        {this.renderMenuSection()}
+        {content}
       </ResizeAware>
     )
   }
