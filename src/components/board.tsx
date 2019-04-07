@@ -9,6 +9,9 @@ import Draggable from 'react-draggable'
 import { moveButton } from '../misc/helpers'
 import { handleKeyPressOrClick } from '../misc/events'
 import Menu from './menu'
+import * as QueryString from 'query-string'
+import Axios from 'axios'
+import { apiBaseUrl } from '../misc/constants'
 
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
@@ -49,6 +52,7 @@ export interface Dimensions {
 @observer
 export default class Board extends React.Component<Props, State> {
   private doubleClickWaiter: NodeJS.Timer | null = null
+  private els: { board: any } = { board: null }
 
   constructor(props: Props) {
     super(props)
@@ -58,7 +62,19 @@ export default class Board extends React.Component<Props, State> {
     }
   }
 
-  private els: { board: any } = { board: null }
+  componentDidMount() {
+    this.handleResize({
+      width: this.els.board.clientWidth
+    })
+    const query = QueryString.parse(location.search)
+    if (query.board) {
+      Axios.get(`${apiBaseUrl}/${query.board}`).then(response => {
+        getStores().actionButtons.reloadEverythingFromValidJSON(
+          response.data.board
+        )
+      })
+    }
+  }
 
   handleDragDrop = (e: any) => {
     const { buttonThatsBeingDragged } = this.state
@@ -115,12 +131,6 @@ export default class Board extends React.Component<Props, State> {
     getStores().boardLayout.setNewDimensions({
       width: size.width,
       height: window.innerHeight
-    })
-  }
-
-  componentDidMount() {
-    this.handleResize({
-      width: this.els.board.clientWidth
     })
   }
 

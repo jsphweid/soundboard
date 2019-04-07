@@ -32,9 +32,9 @@ export default class ActionButtonsStore {
   }
 
   @action
-  reloadEverythingFromValidJSON = (jsonButtons: string) => {
+  reloadEverythingFromValidJSON = (newButtons: ActionButton[]) => {
     getStores().soundPlayer.soundMap.clear()
-    this.actionButtons = JSON.parse(jsonButtons)
+    this.actionButtons = newButtons
   }
 
   getSerializedActionButtons = (): string => {

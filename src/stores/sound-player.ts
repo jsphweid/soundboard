@@ -17,12 +17,14 @@ export default class SoundPlayer {
 
   constructor() {
     // temp... make better way...
-    mockData.forEach(b => {
-      this.soundMap.set(
-        b.soundInfo.soundInfoId,
-        makeSoundFromSoundInfo(b.soundInfo)
-      )
-    })
+    if (typeof window !== 'undefined') {
+      mockData.forEach(b => {
+        this.soundMap.set(
+          b.soundInfo.soundInfoId,
+          makeSoundFromSoundInfo(b.soundInfo)
+        )
+      })
+    }
   }
 
   @action

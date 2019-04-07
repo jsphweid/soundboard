@@ -1,0 +1,2 @@
+cd api
+serverless deploy

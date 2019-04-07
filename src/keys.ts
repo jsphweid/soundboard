@@ -19,6 +19,12 @@ function passesKeyUpValidation(e: any): boolean {
 export function initKeyListeners(keyCallbackMap: {
   [key: string]: () => void
 }) {
+  if (typeof window === 'undefined') {
+    console.log(
+      'Not initializing keyboard listeners as that requires the window.'
+    )
+    return
+  }
   const keysToListenFor = Object.keys(keyCallbackMap)
   keysToListenFor.forEach(key => (keyState[key] = false))
 
