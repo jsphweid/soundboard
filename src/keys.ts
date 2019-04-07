@@ -7,6 +7,7 @@ function passesKeyDownValidation(e: any): boolean {
     keyState[e.key] !== undefined &&
     e.target &&
     e.target.tagName !== 'INPUT' &&
+    e.target.tagName !== 'TEXTAREA' &&
     !e.metaKey
   )
 }

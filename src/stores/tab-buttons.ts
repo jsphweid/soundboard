@@ -1,7 +1,7 @@
 import { observable, action, transaction } from 'mobx'
 import { TabKey, TabButton, ButtonType } from '../buttons/types'
 
-export default class TabButtonsStore implements ButtonStore {
+export default class TabButtonsStore {
   @observable activeTabId: string = 'tab1'
 
   @observable tabs: TabButton[] = [

@@ -1,23 +1,15 @@
-import {
-  observable,
-  computed,
-  action,
-  transaction,
-  autorun,
-  reaction
-} from 'mobx'
-import { ActionButton, ButtonType, ActionKey, TabKey } from '../buttons/types'
-import { mockData } from './data'
+import { observable, computed, action, transaction, reaction } from 'mobx'
+import { ActionButton, ActionKey } from '../buttons/types'
 import { getStores } from '.'
 import { makeSoundFromSoundInfo } from './sound-player'
-import { makeRandomId } from '../misc/helpers'
+import { defaultActionButtons } from '../misc/constants'
 
 export default class ActionButtonsStore {
   constructor() {
     // sync soundplay buttons
     reaction(
       () => this.actionButtons.length,
-      len => {
+      () => {
         const { soundMap } = getStores().soundPlayer
         // only adds buttons... memory overflow...!?!
         this.actionButtons.forEach(({ soundInfo }) => {
@@ -32,44 +24,21 @@ export default class ActionButtonsStore {
       }
     )
   }
-  @observable actionButtons: ActionButton[] = [
-    {
-      soundInfo: mockData[0].soundInfo,
-      title: `airhorn`,
-      type: ButtonType.Action,
-      keyboardKey: 'q',
-      tabId: 'tab1',
-      id: makeRandomId()
-    },
-    {
-      soundInfo: mockData[1].soundInfo,
-      title: `wolololo`,
-      type: ButtonType.Action,
-      keyboardKey: 'w',
-      tabId: 'tab1',
-      id: makeRandomId()
-    },
-    {
-      soundInfo: mockData[2].soundInfo,
-      title: `laugh`,
-      type: ButtonType.Action,
-      keyboardKey: 'a',
-      tabId: 'tab2',
-      id: makeRandomId()
-    },
-    {
-      soundInfo: mockData[3].soundInfo,
-      title: `jeopardy`,
-      type: ButtonType.Action,
-      keyboardKey: 'b',
-      tabId: 'tab3',
-      id: makeRandomId()
-    }
-  ]
+  @observable actionButtons: ActionButton[] = defaultActionButtons
 
   @action
   addButton = (button: ActionButton) => {
     this.actionButtons.push(button)
+  }
+
+  @action
+  reloadEverythingFromValidJSON = (jsonButtons: string) => {
+    getStores().soundPlayer.soundMap.clear()
+    this.actionButtons = JSON.parse(jsonButtons)
+  }
+
+  getSerializedActionButtons = (): string => {
+    return JSON.stringify(this.actionButtons)
   }
 
   @computed

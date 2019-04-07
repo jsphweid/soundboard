@@ -2,7 +2,7 @@ import * as React from 'react'
 import { ButtonBase, isTabButton } from '../buttons/types'
 import { getStores } from '../stores'
 import { Coordinate } from '../sounds/types'
-import { fontFamily } from '../misc/constants'
+import { observer } from 'mobx-react'
 
 export interface ButtonWithCoords extends ButtonBase {
   coords: Coordinate
@@ -39,9 +39,7 @@ const Button: React.SFC<Props> = ({
   const highlightedStyles =
     isTabButton(button) && button.id === activeTabId
       ? {
-          border: '7px solid black',
-          width: `${blockWidth - 13}px`,
-          height: `${blockHeight - 13}px`
+          boxShadow: `inset 0px 0px 0px 5px #000000`
         }
       : {}
   return (
@@ -56,8 +54,7 @@ const Button: React.SFC<Props> = ({
         height: `${blockHeight}px`,
         zIndex: selected ? '100' : undefined,
         opacity: 0.5,
-        border: '0.5px solid black',
-        fontFamily,
+        boxShadow: `inset 0px 0px 0px 0.5px #000000`,
         fontSize: `${titleSize}px`,
         textAlign: `center`,
         ...highlightedStyles
@@ -69,4 +66,4 @@ const Button: React.SFC<Props> = ({
   )
 }
 
-export default Button
+export default observer(Button)

@@ -1,14 +1,18 @@
 import * as React from 'react'
 import { getStores } from '../stores'
-import { fontFamily } from '../misc/constants'
 
 interface Props {}
 
 const Menu: React.SFC<Props> = () => {
   const { blockWidth, blockHeight } = getStores().activeLayout
+  const { openLoadBoardModal } = getStores().loadBoard
+  const { openSaveBoardModal } = getStores().saveBoard
+
   return (
     <div>
-      <h1 style={{ fontFamily, fontSize: `144px`, margin: `0px` }}>SB</h1>
+      <h1 style={{ fontSize: `144px`, margin: `0px` }}>SB</h1>
+      <button onClick={openLoadBoardModal}>Load</button>
+      <button onClick={openSaveBoardModal}>Share</button>
       <img
         style={{
           width: `${blockWidth}px`,

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { ValidKeyboardKey, isValidActionKey } from '../buttons/types'
 import { getStores } from '../stores'
-import { fontFamily } from '../misc/constants'
 import ButtonCreatorForm from './button-creation/form'
 import { observer } from 'mobx-react'
 
@@ -42,7 +41,6 @@ const Tile: React.SFC<Props> = observer(({ keyboardKey }) => {
         style={{
           position: `absolute`,
           fontSize: `${keyboardKeySize}px`,
-          fontFamily,
           opacity: 0.1,
           border: '0.5px solid black',
           height: `100%`,

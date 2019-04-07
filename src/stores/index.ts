@@ -8,6 +8,8 @@ import ActionButtons from './action-buttons'
 import TabButtons from './tab-buttons'
 import { createKeyboardListeners } from '../misc/keyboard-listeners'
 import ButtonCreator from './button-creator'
+import LoadBoard from './load-board'
+import SaveBoard from './save-board'
 
 let stores = initialize()
 
@@ -22,6 +24,8 @@ function initialize() {
   const actionButtons = new ActionButtons()
   const tabButtons = new TabButtons()
   const buttonCreator = new ButtonCreator()
+  const loadBoard = new LoadBoard()
+  const saveBoard = new SaveBoard()
 
   return observable({
     soundPlayer,
@@ -31,7 +35,9 @@ function initialize() {
     activeLayout,
     actionButtons,
     tabButtons,
-    buttonCreator
+    buttonCreator,
+    loadBoard,
+    saveBoard
   })
 }
 

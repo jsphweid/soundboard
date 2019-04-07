@@ -230,8 +230,8 @@ export default class Board extends React.Component<Props, State> {
           width: `${width}px`,
           left: `${x}px`,
           top: `${y}px`,
-          zIndex: -1,
-          position: 'absolute'
+          position: 'absolute',
+          boxShadow: `inset 0px 0px 0px 1px #000000`
         }}
       >
         <Menu />

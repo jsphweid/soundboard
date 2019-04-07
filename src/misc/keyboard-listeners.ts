@@ -9,7 +9,11 @@ export function createKeyboardListeners() {
     keyMap[key] = () => handleKeyPressOrClick(key)
   })
 
-  keyMap.Escape = () => getStores().soundPlayer.killAllSounds()
+  keyMap.Escape = () => {
+    getStores().loadBoard.closeLoadBoardModal()
+    getStores().saveBoard.closeSaveBoardModal()
+    getStores().soundPlayer.killAllSounds()
+  }
   keyMap.Backspace = () => getStores().soundPlayer.killAllSounds()
   keyMap.Delete = () => getStores().soundPlayer.killAllSounds()
 
