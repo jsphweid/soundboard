@@ -12,7 +12,7 @@ export function handleKeyPressOrClick(key: ValidKeyboardKey) {
   } else {
     const button = actionButtons.getButtonByKeyboardKey(key)
     if (button) {
-      soundPlayer.triggerSound(button.soundInfo.soundInfoId)
+      soundPlayer.triggerSound(button.id)
     }
   }
 }

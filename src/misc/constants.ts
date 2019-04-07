@@ -1,4 +1,3 @@
-import { mockData } from '../stores/data'
 import { ButtonType, ActionButton } from '../buttons/types'
 import { makeRandomId } from './helpers'
 
@@ -9,7 +8,7 @@ export const apiBaseUrl = `https://rzav759n25.execute-api.us-east-1.amazonaws.co
 
 export const defaultActionButtons = [
   {
-    soundInfo: mockData[0].soundInfo,
+    url: 'https://www.myinstants.com/media/sounds/mlg-airhorn.mp3',
     title: `airhorn`,
     type: ButtonType.Action,
     keyboardKey: 'q',
@@ -17,7 +16,7 @@ export const defaultActionButtons = [
     id: makeRandomId()
   },
   {
-    soundInfo: mockData[1].soundInfo,
+    url: 'https://www.myinstants.com/media/sounds/sound-9.mp3',
     title: `wolololo`,
     type: ButtonType.Action,
     keyboardKey: 'w',
@@ -25,7 +24,7 @@ export const defaultActionButtons = [
     id: makeRandomId()
   },
   {
-    soundInfo: mockData[2].soundInfo,
+    url: 'https://www.myinstants.com/media/sounds/sitcom-laughing-1.mp3',
     title: `laugh`,
     type: ButtonType.Action,
     keyboardKey: 'a',
@@ -33,7 +32,7 @@ export const defaultActionButtons = [
     id: makeRandomId()
   },
   {
-    soundInfo: mockData[3].soundInfo,
+    url: 'https://www.myinstants.com/media/sounds/jeopardy-theme-lowq.mp3',
     title: `jeopardy`,
     type: ButtonType.Action,
     keyboardKey: 'b',

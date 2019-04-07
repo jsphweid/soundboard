@@ -1,14 +1,13 @@
 import { action, observable } from 'mobx'
-import { SoundInfo, SoundInfoTypes } from '../misc-types'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
-import { mockData } from './data'
+import { ActionButton } from '../buttons/types'
+import { defaultActionButtons } from '../misc/constants'
 
-export function makeSoundFromSoundInfo(soundInfo: SoundInfo): Sound {
-  switch (soundInfo.type) {
+export function makeSoundFromButton(button: ActionButton): Sound {
+  switch (true) {
     default:
-    case SoundInfoTypes.UrlSound:
-      return new URLSound(soundInfo.url)
+      return new URLSound(button.url)
   }
 }
 
@@ -16,22 +15,18 @@ export default class SoundPlayer {
   @observable soundMap = new Map<string, Sound>()
 
   constructor() {
-    // temp... make better way...
     if (typeof window !== 'undefined') {
-      mockData.forEach(b => {
-        this.soundMap.set(
-          b.soundInfo.soundInfoId,
-          makeSoundFromSoundInfo(b.soundInfo)
-        )
+      defaultActionButtons.forEach(b => {
+        this.soundMap.set(b.id, makeSoundFromButton(b))
       })
     }
   }
 
   @action
-  triggerSound(soundInfoId: string) {
-    const sound = this.soundMap.get(soundInfoId)
+  triggerSound(buttonId: string) {
+    const sound = this.soundMap.get(buttonId)
     if (!sound) {
-      console.log(`sound ${soundInfoId} not here......`)
+      console.log(`sound ${buttonId} not here......`)
       return
     }
     sound.trigger()

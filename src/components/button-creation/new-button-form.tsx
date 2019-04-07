@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { getStores } from '../../stores'
 import { ButtonType } from '../../buttons/types'
-import { SoundInfoTypes } from '../../misc-types'
 import { TileIdentifier } from '../../stores/button-creator'
 import { makeRandomId } from '../../misc/helpers'
 
@@ -53,11 +52,9 @@ const handleSave = ({ url, title, start, end }: any) => {
   const { addButton } = getStores().actionButtons
   const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
   addButton({
-    soundInfo: {
-      url,
-      type: SoundInfoTypes.UrlSound,
-      soundInfoId: makeRandomId()
-    },
+    url,
+    start,
+    end,
     title,
     type: ButtonType.Action,
     id: makeRandomId(),

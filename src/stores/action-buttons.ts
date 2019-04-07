@@ -1,8 +1,8 @@
 import { observable, computed, action, transaction, reaction } from 'mobx'
 import { ActionButton, ActionKey } from '../buttons/types'
 import { getStores } from '.'
-import { makeSoundFromSoundInfo } from './sound-player'
 import { defaultActionButtons } from '../misc/constants'
+import { makeSoundFromButton } from './sound-player'
 
 export default class ActionButtonsStore {
   constructor() {
@@ -12,13 +12,10 @@ export default class ActionButtonsStore {
       () => {
         const { soundMap } = getStores().soundPlayer
         // only adds buttons... memory overflow...!?!
-        this.actionButtons.forEach(({ soundInfo }) => {
-          const sound = soundMap.get(soundInfo.soundInfoId)
+        this.actionButtons.forEach(button => {
+          const sound = soundMap.get(button.id)
           if (!sound) {
-            soundMap.set(
-              soundInfo.soundInfoId,
-              makeSoundFromSoundInfo(soundInfo)
-            )
+            soundMap.set(button.id, makeSoundFromButton(button))
           }
         })
       }

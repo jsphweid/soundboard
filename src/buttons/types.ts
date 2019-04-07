@@ -1,5 +1,3 @@
-import { SoundInfo } from '../misc-types'
-
 // TODO: How do you not have to do this...?
 
 export type TabKey = '1' | '2' | '3' | '4' | '5'
@@ -87,6 +85,9 @@ export interface ButtonBase<
 export interface ActionButton extends ButtonBase<ButtonType.Action, ActionKey> {
   soundInfo: SoundInfo
   tabId: string
+  url: string
+  start: number
+  end: number
 }
 
 export function isActionButton(button: ButtonBase): button is ActionButton {
