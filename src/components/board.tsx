@@ -282,7 +282,7 @@ export default class Board extends React.Component<Props, State> {
         <div
           style={{ backgroundColor: 'grey', width: '100vw', height: `100vh` }}
         >
-          <h1 style={{ fontSize: `80px` }}>Loading...</h1>
+          <h1 style={{ margin: `0px`, fontSize: `80px` }}>Loading...</h1>
         </div>
       )
     return (

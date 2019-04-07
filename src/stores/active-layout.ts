@@ -9,7 +9,7 @@ type LayoutType = 'landscapeLayout' | 'portraitLayout'
 
 export default class ActiveLayout implements Layout {
   @computed
-  private get activeLayoutKey(): LayoutType {
+  get activeLayoutType(): LayoutType {
     return getStores()
       ? getStores().boardLayout.dimensions.width > 800
         ? 'landscapeLayout'
@@ -19,7 +19,7 @@ export default class ActiveLayout implements Layout {
 
   @computed
   private get activeLayout() {
-    return getStores()[this.activeLayoutKey]
+    return getStores()[this.activeLayoutType]
   }
 
   @computed
