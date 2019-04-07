@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { ValidKeyboardKey, isValidActionKey } from '../buttons/types'
 import { getStores } from '../stores'
-import ButtonCreatorForm from './button-creation/form'
 import { observer } from 'mobx-react'
+import NewButtonForm from './button-creation/new-button-form'
 
 interface Props {
   keyboardKey: ValidKeyboardKey
@@ -16,7 +16,7 @@ const Tile: React.SFC<Props> = observer(({ keyboardKey }) => {
     tileWithButtonCreator &&
     tileWithButtonCreator.tabId === activeTabId &&
     tileWithButtonCreator.keyboardKey === keyboardKey ? (
-      <ButtonCreatorForm />
+      <NewButtonForm />
     ) : null
 
   const onDoubleClick = isValidActionKey(keyboardKey)

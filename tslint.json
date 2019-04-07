@@ -12,6 +12,7 @@
     "no-console": false,
     "no-var-requires": false,
     "curly": false,
-    "ban-types": false
+    "ban-types": false,
+    "radix": false
   }
 }

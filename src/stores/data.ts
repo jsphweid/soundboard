@@ -1,10 +1,5 @@
 import { SoundInfoTypes } from '../misc-types'
-import md5 from 'blueimp-md5'
-
-// move this to helper eventually
-function makeMd5(obj: { type: SoundInfoTypes; url: string }): string {
-  return md5(JSON.stringify(obj))
-}
+import { makeRandomId } from '../misc/helpers'
 
 export const mockData = [
   {
@@ -29,6 +24,6 @@ export const mockData = [
   soundInfo: {
     type: SoundInfoTypes.UrlSound,
     url,
-    soundInfoId: makeMd5({ type: SoundInfoTypes.UrlSound, url })
+    soundInfoId: makeRandomId()
   }
 }))
