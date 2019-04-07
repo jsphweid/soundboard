@@ -7,7 +7,7 @@ import { defaultActionButtons } from '../misc/constants'
 export function makeSoundFromButton(button: ActionButton): Sound {
   switch (true) {
     default:
-      return new URLSound(button.url)
+      return new URLSound(button)
   }
 }
 

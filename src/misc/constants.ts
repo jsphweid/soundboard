@@ -27,6 +27,7 @@ export const defaultActionButtons = [
     url: 'https://www.myinstants.com/media/sounds/sitcom-laughing-1.mp3',
     title: `laugh`,
     type: ButtonType.Action,
+    start: 1,
     keyboardKey: 'a',
     tabId: 'tab2',
     id: makeRandomId()
@@ -36,6 +37,8 @@ export const defaultActionButtons = [
     title: `jeopardy`,
     type: ButtonType.Action,
     keyboardKey: 'b',
+    start: 0.1,
+    end: 3.75,
     tabId: 'tab3',
     id: makeRandomId()
   }
