@@ -116,11 +116,19 @@ export default class Board extends React.Component<Props, State> {
   handleInitialDragStart = (e: any, button: ButtonWithCoords) => {
     // Assumes that everything is a block of equal proportion...
     const { blockWidth, blockHeight } = getStores().activeLayout
+    const { tileWithButtonCreator } = getStores().buttonCreator
     const x = Math.floor(e.pageX / blockWidth) * blockWidth
     const y = Math.floor(e.pageY / blockHeight) * blockHeight
 
     // waiting for double click, else it was legit single click
     this.doubleClickWaiter = setTimeout(() => {
+      if (
+        tileWithButtonCreator &&
+        tileWithButtonCreator.keyboardKey === button.keyboardKey
+      ) {
+        return
+      }
+
       handleKeyPressOrClick(button.keyboardKey)
       this.setState({ buttonThatsBeingDragged: null })
     }, 100)
