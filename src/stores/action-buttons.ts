@@ -48,8 +48,6 @@ export default class ActionButtonsStore {
   @action
   moveActionButton(button: ActionButton, destination: ActionKey) {
     const { activeTabId } = getStores().tabButtons
-    console.log('button', button)
-    console.log('destination', destination)
     const sourceIndex = this.actionButtons.findIndex(t => t.id === button.id)
     const destinationIndex = this.actionButtons.findIndex(
       b => b.keyboardKey === destination && b.tabId === activeTabId
@@ -58,7 +56,6 @@ export default class ActionButtonsStore {
     if (sourceIndex > -1) {
       transaction(() => {
         if (destinationIndex > -1) {
-          console.log('destin', toJS(this.actionButtons[destinationIndex]))
           this.actionButtons[destinationIndex].keyboardKey = button.keyboardKey
           this.actionButtons[destinationIndex].tabId = button.tabId
         }
