@@ -1,4 +1,4 @@
-import { observable, computed, action, transaction, reaction } from 'mobx'
+import { observable, computed, action, transaction, reaction, toJS } from 'mobx'
 import { ActionButton, ActionKey } from '../buttons/types'
 import { getStores } from '.'
 import { defaultActionButtons } from '../misc/constants'
@@ -47,20 +47,22 @@ export default class ActionButtonsStore {
 
   @action
   moveActionButton(button: ActionButton, destination: ActionKey) {
+    const { activeTabId } = getStores().tabButtons
+    console.log('button', button)
+    console.log('destination', destination)
     const sourceIndex = this.actionButtons.findIndex(t => t.id === button.id)
     const destinationIndex = this.actionButtons.findIndex(
-      t => t.keyboardKey === destination
+      b => b.keyboardKey === destination && b.tabId === activeTabId
     )
 
     if (sourceIndex > -1) {
       transaction(() => {
         if (destinationIndex > -1) {
+          console.log('destin', toJS(this.actionButtons[destinationIndex]))
           this.actionButtons[destinationIndex].keyboardKey = button.keyboardKey
           this.actionButtons[destinationIndex].tabId = button.tabId
         }
-        this.actionButtons[
-          sourceIndex
-        ].tabId = getStores().tabButtons.activeTabId
+        this.actionButtons[sourceIndex].tabId = activeTabId
         this.actionButtons[sourceIndex].keyboardKey = destination
       })
     }
