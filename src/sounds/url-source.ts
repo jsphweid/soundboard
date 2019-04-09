@@ -4,7 +4,7 @@ export default class URLSound implements Sound {
   private audioElement: HTMLAudioElement // TODO:... what is it
   private start: number
   private end?: number | null
-  private timer: NodeJS.Timer | undefined
+  private timer: any
 
   constructor(data: AudioData) {
     this.audioElement = new Audio(data.url)

@@ -1,5 +1,5 @@
 import { observable, computed, action, transaction, reaction, toJS } from 'mobx'
-import { ActionButton, ActionKey } from '../buttons/types'
+import { ActionButton, KeyboardKey } from '../buttons/types'
 import { getStores } from '.'
 import { defaultActionButtons } from '../misc/constants'
 import { makeSoundFromButton } from './sound-player'
@@ -46,7 +46,7 @@ export default class ActionButtonsStore {
   }
 
   @action
-  moveActionButton(button: ActionButton, destination: ActionKey) {
+  moveActionButton(button: ActionButton, destination: KeyboardKey) {
     const { activeTabId } = getStores().tabButtons
     const sourceIndex = this.actionButtons.findIndex(t => t.id === button.id)
     const destinationIndex = this.actionButtons.findIndex(
@@ -66,7 +66,7 @@ export default class ActionButtonsStore {
   }
 
   public getButtonByKeyboardKey(
-    keyboardKey: ActionKey,
+    keyboardKey: KeyboardKey,
     tabId = getStores().tabButtons.activeTabId
   ): ActionButton | undefined {
     return this.actionButtons.find(

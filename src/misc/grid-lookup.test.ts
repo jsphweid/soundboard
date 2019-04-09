@@ -1,14 +1,15 @@
 import GridLookup from './grid-lookup'
-import { ActionKey } from '../buttons/types'
+import { KeyboardKey } from '../buttons/types'
 
 describe('GridLookup', () => {
-  const grid: ActionKey[][] = [
+  const grid: KeyboardKey[][] = [
+    ['1', '2', '3', '4', '5'],
     ['q', 'w', 'e', 'r', 't'],
     ['a', 's', 'd', 'f', 'g'],
     ['z', 'x', 'c', 'v', 'b']
   ]
 
-  const gridLookup = new GridLookup<ActionKey>(grid)
+  const gridLookup = new GridLookup<KeyboardKey>(grid)
 
   test('that it should know that "q" is the origin', () => {
     expect(gridLookup.getCoordsFromkey('q')).toEqual({ x: 0, y: 0 })

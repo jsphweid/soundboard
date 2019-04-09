@@ -1,0 +1,32 @@
+.button {
+  background: rgb(184, 143, 112);
+  height: 100%;
+  width: 100%;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.buttonRow {
+  width: calc(100% - 16px);
+  height: 16%;
+  margin: 8px 8px 0 8px;
+  display: inline-block;
+  border-radius: 24px;
+  background: rgb(249, 249, 255);
+}
+
+.bigButton {
+  width: calc(100% - 16px);
+  flex: 1;
+  height: 100%;
+  margin: 8px;
+  background: rgb(106, 106, 238);
+  border-radius: 8px;
+}
+
+.icon {
+  height: 100%;
+  width: 33.3333%;
+  cursor: pointer;
+}

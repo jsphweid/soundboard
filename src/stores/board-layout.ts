@@ -1,15 +1,14 @@
 import { observable, action } from 'mobx'
 import { Dimensions } from '../components/board'
-import { ActionKey, TabKey } from '../buttons/types'
 import GridLookup from '../misc/grid-lookup'
+import { KeyboardKey } from '../buttons/types'
 
-const hotkeys: ActionKey[][] = [
+export const keyboardKeys: KeyboardKey[][] = [
+  ['1', '2', '3', '4', '5'],
   ['q', 'w', 'e', 'r', 't'],
   ['a', 's', 'd', 'f', 'g'],
   ['z', 'x', 'c', 'v', 'b']
 ]
-
-const tabs: TabKey[][] = [['1', '2', '3', '4', '5']]
 
 export default class BoardLayout {
   @observable public dimensions: Dimensions = { width: 1, height: 1 }
@@ -22,9 +21,6 @@ export default class BoardLayout {
   public static menuBlockWidth = 1
 
   // assumes that each row is the same length (must be matrix)
-  public static hotkeys: ActionKey[][] = hotkeys
-  public static tabs: TabKey[][] = tabs
 
-  public static hotkeysGridLookup = new GridLookup(hotkeys)
-  public static tabsGridLookup = new GridLookup(tabs)
+  public static keyboardKeysGridLookup = new GridLookup(keyboardKeys)
 }

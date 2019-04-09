@@ -1,5 +1,5 @@
 import { observable, action, transaction } from 'mobx'
-import { TabKey, TabButton, ButtonType } from '../buttons/types'
+import { TabButton, ButtonType, KeyboardKey } from '../buttons/types'
 
 export default class TabButtonsStore {
   @observable activeTabId: string = 'tab1'
@@ -43,7 +43,7 @@ export default class TabButtonsStore {
   }
 
   @action
-  moveTabButton(button: TabButton, destination: TabKey) {
+  moveTabButton(button: TabButton, destination: KeyboardKey) {
     const sourceIndex = this.tabs.findIndex(t => t.id === button.id)
     const destinationIndex = this.tabs.findIndex(
       t => t.keyboardKey === destination
@@ -57,7 +57,7 @@ export default class TabButtonsStore {
     }
   }
 
-  getButtonByKeyboardKey(keyboardKey: TabKey) {
+  getButtonByKeyboardKey(keyboardKey: KeyboardKey) {
     return this.tabs.find(button => button.keyboardKey === keyboardKey)
   }
 }

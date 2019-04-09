@@ -1,24 +1,8 @@
 import * as React from 'react'
-import { getStores } from '../../stores'
-import { ButtonType } from '../../buttons/types'
-import { TileIdentifier } from '../../stores/button-creator'
-import { makeRandomId } from '../../misc/helpers'
 
 import { Form, Field } from 'react-final-form'
-import { Paper, Grid, Button, CssBaseline } from '@material-ui/core'
+import { Paper, Grid, Button } from '@material-ui/core'
 import TextField from './text-field'
-
-function audioUrlIsValid(url: string): Promise<boolean> {
-  const audio = new Audio(url)
-  audio.volume = 0
-  return audio
-    .play()
-    .then(() => {
-      audio.pause()
-      return true
-    })
-    .catch(() => false)
-}
 
 const validate = ({ title, url, start, end }: any) => {
   const errors: any = {}
@@ -34,28 +18,16 @@ const validate = ({ title, url, start, end }: any) => {
   return errors
 }
 
-const handleSave = ({ url, title, start, end }: any) => {
-  const { tileWithButtonCreator, cancel } = getStores().buttonCreator
-  const { addButton } = getStores().actionButtons
-  const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
-  addButton({
-    url,
-    start,
-    end,
-    title,
-    type: ButtonType.Action,
-    id: makeRandomId(),
-    tabId,
-    keyboardKey
-  })
-  cancel()
+// TODO: make these required
+interface Props {
+  onSave: (data: any) => void
+  onCancel: () => void
 }
 
-const NewButtonForm: React.SFC = () => (
-  <div style={{ padding: 16, margin: 'auto', maxWidth: 600 }}>
-    <CssBaseline />
+const EditButtonForm: React.SFC<Props> = ({ onSave, onCancel }: Props) => (
+  <div style={{ padding: `8px` }}>
     <Form
-      onSubmit={handleSave}
+      onSubmit={onSave}
       validate={validate}
       render={({ handleSubmit, submitting }) => (
         <form onSubmit={handleSubmit} noValidate={true}>
@@ -102,11 +74,7 @@ const NewButtonForm: React.SFC = () => (
                 />
               </Grid>
               <Grid item={true} style={{ marginTop: 16 }}>
-                <Button
-                  type="button"
-                  variant="contained"
-                  onClick={getStores().buttonCreator.cancel}
-                >
+                <Button type="button" variant="contained" onClick={onCancel}>
                   Cancel
                 </Button>
               </Grid>
@@ -128,4 +96,4 @@ const NewButtonForm: React.SFC = () => (
   </div>
 )
 
-export default NewButtonForm
+export default EditButtonForm

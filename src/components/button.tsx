@@ -1,69 +1,77 @@
 import * as React from 'react'
-import { ButtonBase, isTabButton } from '../buttons/types'
-import { getStores } from '../stores'
+import { ActionButton, TabButton } from '../buttons/types'
 import { Coordinate } from '../sounds/types'
-import { observer } from 'mobx-react'
+import { MdClose, MdDragHandle, MdEdit } from 'react-icons/md'
+import EditButtonForm from './button-creation/edit-button-form'
 
-export interface ButtonWithCoords extends ButtonBase {
+const css = require('./button.module.css')
+
+export interface ActionButtonWithCoords extends ActionButton {
   coords: Coordinate
 }
 
-interface DraggableProps {
-  style?: any
-  className?: string
-  onTouchEnd?: any
-  onTouchStart?: any
-  onMouseUp?: any
-  onMouseDown?: any
+export interface TabButtonWithCoords extends TabButton {
+  coords: Coordinate
+}
+
+interface Props {
+  button: ActionButtonWithCoords | TabButtonWithCoords
   onClick?: any
-  selected?: boolean
 }
 
-interface Props extends DraggableProps {
-  button: ButtonWithCoords
+interface State {
+  editing: boolean
 }
 
-const Button: React.SFC<Props> = ({
-  button,
-  style,
-  className,
-  onTouchEnd,
-  onTouchStart,
-  onMouseDown,
-  onMouseUp,
-  onClick,
-  selected
-}) => {
-  const { blockWidth, blockHeight, titleSize } = getStores().activeLayout
-  const { activeTabId } = getStores().tabButtons
-  const highlightedStyles =
-    isTabButton(button) && button.id === activeTabId
-      ? {
-          boxShadow: `inset 0px 0px 0px 5px #000000`
-        }
-      : {}
-  return (
-    <div
-      {...{ className, onTouchEnd, onTouchStart, onMouseDown, onMouseUp }}
-      style={{
-        ...style,
-        left: `${button.coords.x}px`,
-        top: `${button.coords.y}px`,
-        position: `absolute`,
-        width: `${blockWidth}px`,
-        height: `${blockHeight}px`,
-        zIndex: selected ? '100' : undefined,
-        opacity: 0.5,
-        boxShadow: `inset 0px 0px 0px 0.5px #000000`,
-        fontSize: `${titleSize}px`,
-        textAlign: `center`,
-        ...highlightedStyles
-      }}
-      onClick={onClick}
-    >
-      {button.title}
-    </div>
-  )
-}
+// const handleSave = ({ url, title, start, end }: any) => {
+//   const { tileWithButtonCreator, cancel } = getStores().buttonCreator
+//   const { addButton } = getStores().actionButtons
+//   const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
+//   addButton({
+//     url,
+//     start,
+//     end,
+//     title,
+//     type: ButtonType.Action,
+//     id: makeRandomId(),
+//     tabId,
+//     keyboardKey
+//   })
+//   cancel()
+// }
 
-export default observer(Button)
+export default class Button extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      editing: false
+    }
+  }
+
+  private renderMainContent() {
+    return this.state.editing ? (
+      <EditButtonForm
+        onCancel={() => this.setState({ editing: false })}
+        onSave={data => console.log('saving data', data)}
+      />
+    ) : (
+      <div className={css.bigButton} />
+    )
+  }
+
+  public render() {
+    return (
+      <div className={css.button}>
+        <div className={css.buttonRow}>
+          <MdEdit
+            className={`${css.icon}`}
+            onClick={() => this.setState({ editing: true })}
+          />
+          <MdDragHandle className={`${css.icon}`} />
+          <MdClose className={`${css.icon}`} />
+        </div>
+        {this.renderMainContent()}
+      </div>
+    )
+  }
+}

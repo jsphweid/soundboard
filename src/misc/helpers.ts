@@ -2,11 +2,10 @@ import { Coordinate } from '../sounds/types'
 import { LayoutSection } from '../components/board'
 import {
   ButtonBase,
-  ValidKeyboardKey,
-  isValidTabKey,
   isActionButton,
-  isValidActionKey,
-  isTabButton
+  isTabButton,
+  KeyboardKey,
+  isKeyboardKey
 } from '../buttons/types'
 import { getStores } from '../stores'
 import { v4 as uuidGen } from 'uuid'
@@ -38,12 +37,14 @@ export function pointInSection(
   )
 }
 
-export function moveButton(button: ButtonBase, destination: ValidKeyboardKey) {
-  if (isActionButton(button) && isValidActionKey(destination)) {
+export function moveButton(button: ButtonBase, destination: KeyboardKey) {
+  if (!isKeyboardKey(destination)) return
+
+  if (isActionButton(button)) {
     return getStores().actionButtons.moveActionButton(button, destination)
   }
 
-  if (isTabButton(button) && isValidTabKey(destination)) {
+  if (isTabButton(button)) {
     return getStores().tabButtons.moveTabButton(button, destination)
   }
 
@@ -72,4 +73,16 @@ export function enumOptionToDropdownOption(
 
 export function makeRandomId() {
   return uuidGen()
+}
+
+export function audioUrlIsValid(url: string): Promise<boolean> {
+  const audio = new Audio(url)
+  audio.volume = 0
+  return audio
+    .play()
+    .then(() => {
+      audio.pause()
+      return true
+    })
+    .catch(() => false)
 }
