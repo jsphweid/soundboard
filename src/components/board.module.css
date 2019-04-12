@@ -1,0 +1,13 @@
+.tile {
+  float: left;
+  position: relative;
+  pointer-events: none;
+}
+
+.tileNum {
+  position: absolute;
+  opacity: 0.1;
+  border: 0.5px solid black;
+  height: 100%;
+  width: 100%;
+}

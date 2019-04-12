@@ -1,12 +1,11 @@
 import { Coordinate } from '../sounds/types'
-import { LayoutSection } from '../components/board'
 import {
   ButtonBase,
   isActionButton,
   isTabButton,
   KeyboardKey,
   isKeyboardKey
-} from '../buttons/types'
+} from '../misc-types'
 import { getStores } from '../stores'
 import { v4 as uuidGen } from 'uuid'
 
@@ -27,15 +26,15 @@ export function determineTileCoordsFromXY(
     : { x, y }
 }
 
-export function pointInSection(
-  section: LayoutSection,
-  point: Coordinate
-): boolean {
-  const { x, y, height, width } = section
-  return (
-    point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
-  )
-}
+// export function pointInSection(
+//   section: LayoutSection,
+//   point: Coordinate
+// ): boolean {
+//   const { x, y, height, width } = section
+//   return (
+//     point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
+//   )
+// }
 
 export function moveButton(button: ButtonBase, destination: KeyboardKey) {
   if (!isKeyboardKey(destination)) return

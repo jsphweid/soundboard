@@ -1,4 +1,4 @@
-import { ButtonType, ActionButton } from '../buttons/types'
+import { ButtonType, ActionButton } from '../misc-types'
 import { makeRandomId } from './helpers'
 
 export const leafPic = `https://res.cloudinary.com/dx6f6g5cv/image/upload/c_scale,o_12,q_43,w_534/v1552677118/speakers-sound-icon-music-0a3787-1024_t1snbx.png`

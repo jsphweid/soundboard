@@ -1,5 +1,5 @@
 import { getStores } from '../stores'
-import { KeyboardKey, isKeyboardKey } from '../buttons/types'
+import { KeyboardKey, isKeyboardKey } from '../misc-types'
 
 export function handleKeyPressOrClick(key: KeyboardKey) {
   const { actionButtons, tabButtons, soundPlayer } = getStores()

@@ -1,5 +1,5 @@
-import { observable, computed, action, transaction, reaction, toJS } from 'mobx'
-import { ActionButton, KeyboardKey } from '../buttons/types'
+import { observable, computed, action, transaction, reaction } from 'mobx'
+import { ActionButton, KeyboardKey } from '../misc-types'
 import { getStores } from '.'
 import { defaultActionButtons } from '../misc/constants'
 import { makeSoundFromButton } from './sound-player'

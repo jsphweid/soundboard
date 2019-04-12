@@ -8,7 +8,7 @@ import SaveBoardModal from '../components/save-board-modal'
 
 export default () => (
   <div className="prevent-selection">
-    <Board />
+    <Board buttons={[]} />
     <LoadBoardModal />
     <SaveBoardModal />
   </div>

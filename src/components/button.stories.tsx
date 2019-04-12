@@ -1,10 +1,12 @@
 import React from 'react'
 import { action } from '@storybook/addon-actions'
-import { withKnobs, text, boolean, number } from '@storybook/addon-knobs'
+import { withKnobs, number } from '@storybook/addon-knobs'
 
 import { storiesOf } from '@storybook/react'
 import Button, { ActionButtonWithCoords, TabButtonWithCoords } from './button'
-import { ButtonType } from '../buttons/types'
+import { ButtonType } from '../misc-types'
+
+import Draggable from 'react-draggable'
 
 const defaultActionButton: ActionButtonWithCoords = {
   coords: { x: 0, y: 0 },
@@ -31,27 +33,42 @@ const defaultTabButton: TabButtonWithCoords = {
 ].forEach(({ button, buttonType }) => {
   const stories = storiesOf('Button', module).add(
     `${buttonType} button`,
-    () => <Button button={button} onClick={action('clicked')} />
+    () => <Button button={button} onTrigger={action('clicked')} />
   )
 
   stories.addDecorator(withKnobs)
 
   // Knobs as dynamic variables.
-  stories.add(`${buttonType} button w/ flexible container`, () => {
+  stories.add(`${buttonType} button w/ flexible display props`, () => {
     const height = number('height', 400)
     const width = number('width', 400)
 
     return (
-      <div
-        style={{
-          height: `${height}px`,
-          width: `${width}px`,
-          backgroundColor: '#999999',
-          padding: `8px`
-        }}
-      >
-        <Button button={defaultActionButton} onClick={action('clicked')} />
-      </div>
+      <Button
+        button={button}
+        displayProperties={{ height, width, x: 0, y: 0 }}
+        onTrigger={action('clicked')}
+      />
     )
   })
+})
+
+storiesOf('Button', module).add(`draggable`, () => {
+  const height = number('height', 400)
+  const width = number('width', 400)
+
+  return (
+    <Draggable
+      handle=".handle"
+      defaultPosition={{ x: 0, y: 0 }}
+      onStart={() => console.log('onstart')}
+      onDrag={() => console.log('ondrag')}
+      onStop={() => console.log('onstop')}
+    >
+      <Button
+        button={defaultActionButton}
+        onTrigger={() => console.log('--')}
+      />
+    </Draggable>
+  )
 })

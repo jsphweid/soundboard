@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import { KeyboardKey } from '../buttons/types'
+import { KeyboardKey } from '../misc-types'
 
 interface Props {
   keyboardKey: KeyboardKey

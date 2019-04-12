@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
-import { ActionButton } from '../buttons/types'
+import { ActionButton } from '../misc-types'
 import { defaultActionButtons } from '../misc/constants'
 
 export function makeSoundFromButton(button: ActionButton): Sound {

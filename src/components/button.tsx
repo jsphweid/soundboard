@@ -1,10 +1,22 @@
 import * as React from 'react'
-import { ActionButton, TabButton } from '../buttons/types'
+import { ActionButton, TabButton, ButtonType } from '../misc-types'
 import { Coordinate } from '../sounds/types'
 import { MdClose, MdDragHandle, MdEdit } from 'react-icons/md'
-import EditButtonForm from './button-creation/edit-button-form'
+import EditActionButtonForm from './button-creation/edit-action-button-form'
+import EditTabButtonForm from './button-creation/edit-tab-button-form'
 
 const css = require('./button.module.css')
+
+interface DraggableProps {
+  style?: any
+  className?: string
+  onTouchEnd?: any
+  onTouchStart?: any
+  onMouseUp?: any
+  onMouseDown?: any
+  onClick?: any
+  selected?: boolean
+}
 
 export interface ActionButtonWithCoords extends ActionButton {
   coords: Coordinate
@@ -14,9 +26,26 @@ export interface TabButtonWithCoords extends TabButton {
   coords: Coordinate
 }
 
-interface Props {
+interface ButtonDisplayProperties {
+  height: number
+  width: number
+  x: number
+  y: number
+}
+
+interface Props extends DraggableProps {
   button: ActionButtonWithCoords | TabButtonWithCoords
-  onClick?: any
+  onTrigger: () => void
+  displayProperties?: ButtonDisplayProperties
+  onMouseEnter?: () => void
+  // onDataUpdate: (data: T) => void
+}
+
+const defaultDisplayProps = {
+  height: 300,
+  width: 300,
+  x: 0,
+  y: 0
 }
 
 interface State {
@@ -48,27 +77,75 @@ export default class Button extends React.Component<Props, State> {
     }
   }
 
+  private renderEditForm() {
+    switch (this.props.button.type) {
+      case ButtonType.Action:
+        return (
+          <EditActionButtonForm
+            onCancel={() => this.setState({ editing: false })}
+            onSave={data => console.log('saving data', data)}
+            initialData={this.props.button}
+          />
+        )
+      case ButtonType.Tab:
+        return (
+          <EditTabButtonForm
+            onCancel={() => this.setState({ editing: false })}
+            onSave={data => console.log('saving data', data)}
+            initialData={this.props.button}
+          />
+        )
+      default:
+        return null
+    }
+  }
+
   private renderMainContent() {
     return this.state.editing ? (
-      <EditButtonForm
-        onCancel={() => this.setState({ editing: false })}
-        onSave={data => console.log('saving data', data)}
-      />
+      this.renderEditForm()
     ) : (
       <div className={css.bigButton} />
     )
   }
 
   public render() {
+    const {
+      style,
+      className,
+      onTouchEnd,
+      onTouchStart,
+      onMouseDown,
+      onMouseUp,
+      displayProperties,
+      onMouseEnter
+    } = this.props
+
+    const { height, width, x, y } = displayProperties || defaultDisplayProps
     return (
-      <div className={css.button}>
+      <div
+        onMouseEnter={onMouseEnter}
+        className={`${css.button} ${className}`}
+        style={{
+          ...style,
+          height: `${height}px`,
+          width: `${width}px`,
+          left: `${x}px`,
+          top: `${y}px`
+        }}
+        {...{
+          onTouchEnd,
+          onTouchStart,
+          onMouseDown,
+          onMouseUp
+        }}
+      >
         <div className={css.buttonRow}>
           <MdEdit
-            className={`${css.icon}`}
+            className={css.icon}
             onClick={() => this.setState({ editing: true })}
           />
-          <MdDragHandle className={`${css.icon}`} />
-          <MdClose className={`${css.icon}`} />
+          <MdDragHandle className={`${css.icon} handle`} />
+          <MdClose className={css.icon} />
         </div>
         {this.renderMainContent()}
       </div>

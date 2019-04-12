@@ -1,5 +1,5 @@
 import GridLookup from './grid-lookup'
-import { KeyboardKey } from '../buttons/types'
+import { KeyboardKey } from '../misc-types'
 
 describe('GridLookup', () => {
   const grid: KeyboardKey[][] = [

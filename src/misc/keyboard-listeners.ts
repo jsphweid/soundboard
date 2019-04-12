@@ -1,7 +1,7 @@
 import { initKeyListeners } from '../keys'
-import { keyboardKeys } from '../stores/board-layout'
 import { handleKeyPressOrClick } from './events'
 import { getStores } from '../stores'
+import { keyboardKeys } from '../board-layout'
 
 export function createKeyboardListeners() {
   const keyMap = {} as any

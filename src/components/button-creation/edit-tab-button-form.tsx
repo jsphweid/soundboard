@@ -3,6 +3,7 @@ import * as React from 'react'
 import { Form, Field } from 'react-final-form'
 import { Paper, Grid, Button } from '@material-ui/core'
 import TextField from './text-field'
+import { EditFormProps } from './edit-form-types'
 
 const validate = ({ title, url, start, end }: any) => {
   const errors: any = {}
@@ -18,17 +19,18 @@ const validate = ({ title, url, start, end }: any) => {
   return errors
 }
 
-// TODO: make these required
-interface Props {
-  onSave: (data: any) => void
-  onCancel: () => void
-}
+type EditTabButtonFormProps = EditFormProps<{ title: string }>
 
-const EditButtonForm: React.SFC<Props> = ({ onSave, onCancel }: Props) => (
+const EditTabButtonForm: React.SFC<EditTabButtonFormProps> = ({
+  onSave,
+  onCancel,
+  initialData: { title }
+}: EditTabButtonFormProps) => (
   <div style={{ padding: `8px` }}>
     <Form
-      onSubmit={onSave}
+      onSubmit={onSave as any}
       validate={validate}
+      initialValues={{ title }}
       render={({ handleSubmit, submitting }) => (
         <form onSubmit={handleSubmit} noValidate={true}>
           <Paper style={{ padding: 16 }}>
@@ -41,36 +43,6 @@ const EditButtonForm: React.SFC<Props> = ({ onSave, onCancel }: Props) => (
                   component={TextField}
                   type="text"
                   label="Button Title"
-                />
-              </Grid>
-              <Grid item={true} xs={12}>
-                <Field
-                  fullWidth={true}
-                  required={true}
-                  name="url"
-                  component={TextField}
-                  type="text"
-                  label="Source URL"
-                />
-              </Grid>
-              <Grid item={true} xs={6}>
-                <Field
-                  name="start"
-                  fullWidth={true}
-                  required={false}
-                  component={TextField}
-                  type="number"
-                  label="Start Time"
-                />
-              </Grid>
-              <Grid item={true} xs={6}>
-                <Field
-                  name="end"
-                  fullWidth={true}
-                  required={false}
-                  component={TextField}
-                  type="number"
-                  label="End Time"
                 />
               </Grid>
               <Grid item={true} style={{ marginTop: 16 }}>
@@ -96,4 +68,4 @@ const EditButtonForm: React.SFC<Props> = ({ onSave, onCancel }: Props) => (
   </div>
 )
 
-export default EditButtonForm
+export default EditTabButtonForm
