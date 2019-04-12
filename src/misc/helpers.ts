@@ -6,24 +6,20 @@ import {
   KeyboardKey,
   isKeyboardKey
 } from '../misc-types'
-import { getStores } from '../stores'
+// import { getStores } from '../stores'
 import { v4 as uuidGen } from 'uuid'
+import { numKeysWide, numKeysHigh, gridLookup } from '../board-layout'
 
-export function determineTileCoordsFromXY(
-  boardDetails: {
-    boardHeight: number
-    boardWidth: number
-    numItemsHigh: number
-    numItemsWide: number
-  },
+export function determineKeyboardKeyDestination(
+  boardWidth: number,
+  boardHeight: number,
   xy: Coordinate
-): Coordinate | null {
-  const { boardHeight, boardWidth, numItemsHigh, numItemsWide } = boardDetails
-  const y = Math.floor((xy.y / boardHeight) * numItemsHigh)
-  const x = Math.floor((xy.x / boardWidth) * numItemsWide)
-  return x >= numItemsWide || y >= numItemsHigh || x < 0 || y < 0
-    ? null
-    : { x, y }
+) {
+  const y = Math.floor((xy.y / boardHeight) * numKeysHigh)
+  const x = Math.floor((xy.x / boardWidth) * numKeysWide)
+  const position =
+    x >= numKeysWide || y >= numKeysHigh || x < 0 || y < 0 ? null : { x, y }
+  return position ? gridLookup.getKeyFromCoords(position) : null
 }
 
 // export function pointInSection(
@@ -36,21 +32,21 @@ export function determineTileCoordsFromXY(
 //   )
 // }
 
-export function moveButton(button: ButtonBase, destination: KeyboardKey) {
-  if (!isKeyboardKey(destination)) return
+// export function moveButton(button: ButtonBase, destination: KeyboardKey) {
+//   if (!isKeyboardKey(destination)) return
 
-  if (isActionButton(button)) {
-    return getStores().actionButtons.moveActionButton(button, destination)
-  }
+//   if (isActionButton(button)) {
+//     return getStores().actionButtons.moveActionButton(button, destination)
+//   }
 
-  if (isTabButton(button)) {
-    return getStores().tabButtons.moveTabButton(button, destination)
-  }
+//   if (isTabButton(button)) {
+//     return getStores().tabButtons.moveTabButton(button, destination)
+//   }
 
-  console.log(
-    'An action key can only be moved to a valid action key tile. A tab key can only be moved to valid tab key tile.'
-  )
-}
+//   console.log(
+//     'An action key can only be moved to a valid action key tile. A tab key can only be moved to valid tab key tile.'
+//   )
+// }
 
 export interface DropdownOption {
   label: string
@@ -70,7 +66,7 @@ export function enumOptionToDropdownOption(
   ) as DropdownOption
 }
 
-export function makeRandomId() {
+export function generateRandomId(): string {
   return uuidGen()
 }
 

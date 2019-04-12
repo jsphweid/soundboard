@@ -1,12 +1,10 @@
 import React from 'react'
 
 import { storiesOf } from '@storybook/react'
-import { ActionButtonWithCoords, TabButtonWithCoords } from './button'
 import Board from './board'
-import { ButtonType } from '../misc-types'
+import { ButtonType, ActionButton, TabButton } from '../misc-types'
 
-const defaultActionButton: ActionButtonWithCoords = {
-  coords: { x: 0, y: 0 },
+const defaultActionButton: ActionButton = {
   type: ButtonType.Action,
   title: 'some title',
   keyboardKey: 'a',
@@ -17,8 +15,7 @@ const defaultActionButton: ActionButtonWithCoords = {
   end: 4
 }
 
-const defaultTabButton: TabButtonWithCoords = {
-  coords: { x: 1, y: 3 },
+const defaultTabButton: TabButton = {
   type: ButtonType.Tab,
   title: 'some title',
   keyboardKey: '1',
@@ -26,9 +23,12 @@ const defaultTabButton: TabButtonWithCoords = {
 }
 
 storiesOf('Board', module)
-  .add(`just board`, () => <Board buttons={[]} />)
+  .add(`just board`, () => <Board handleMove={() => null} buttons={[]} />)
   .add(`board with a few buttons`, () => (
-    <Board buttons={[defaultActionButton, defaultTabButton]} />
+    <Board
+      handleMove={() => null}
+      buttons={[defaultActionButton, defaultTabButton]}
+    />
   ))
 
 // stories.addDecorator(withKnobs)

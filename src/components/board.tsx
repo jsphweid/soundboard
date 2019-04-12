@@ -1,15 +1,21 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import Button, { ActionButtonWithCoords, TabButtonWithCoords } from './button'
+import Button from './button'
 import Draggable from 'react-draggable'
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
-import * as QueryString from 'query-string'
-import { keyboardKeys, numKeysHigh, numKeysWide } from '../board-layout'
+import {
+  keyboardKeys,
+  numKeysHigh,
+  numKeysWide,
+  gridLookup
+} from '../board-layout'
+import { determineKeyboardKeyDestination } from '../misc/helpers'
+import { KeyboardKey, EitherButton } from '../misc-types'
 
 const css = require('./board.module.css')
 
-interface Layout {
+export interface Layout {
   boardHeight: number
   boardWidth: number
   itemHeight: number
@@ -17,13 +23,14 @@ interface Layout {
 }
 
 interface State {
-  buttonThatsBeingDragged: ActionButtonWithCoords | TabButtonWithCoords | null
+  buttonThatsBeingDragged: EitherButton | null
   everythingLoaded: boolean
   layout: Layout
 }
 
 interface Props {
-  buttons: Array<ActionButtonWithCoords | TabButtonWithCoords>
+  buttons: EitherButton[]
+  handleMove: (button: EitherButton, keyboardKey: KeyboardKey) => void
 }
 
 @observer
@@ -64,6 +71,21 @@ export default class Board extends React.Component<Props, State> {
     // }
   }
 
+  private handleDragStop = (e: any) => {
+    const { buttonThatsBeingDragged } = this.state
+    const coords = { x: e.layerX, y: e.layerY }
+    const { boardHeight, boardWidth } = this.state.layout
+    const keyboardKeyDestination = determineKeyboardKeyDestination(
+      boardWidth,
+      boardHeight,
+      coords
+    )
+
+    if (buttonThatsBeingDragged && keyboardKeyDestination) {
+      this.props.handleMove(buttonThatsBeingDragged, keyboardKeyDestination)
+    }
+  }
+
   private handleResize = (size: { width: number; height: number }) => {
     if (!size.width) return
     const layout = {
@@ -96,21 +118,20 @@ export default class Board extends React.Component<Props, State> {
     return tiles
   }
 
-  private renderButton = (
-    button: ActionButtonWithCoords | TabButtonWithCoords
-  ) => {
+  private renderButton = (button: EitherButton) => {
     const { itemHeight, itemWidth } = this.state.layout
-    const { coords } = button
+    const coords = gridLookup.getCoordsFromKey(button.keyboardKey)
     const x = coords.x * itemWidth
     const y = coords.y * itemHeight
     return (
       <Draggable
         key={`button-${button.id}`}
         bounds="parent"
+        handle=".handle"
         position={{ x: 0, y: 0 }}
         onDrag={() => console.log('onDrag')}
         onStart={() => console.log('onStart')}
-        onStop={() => console.log('onStop')}
+        onStop={this.handleDragStop}
       >
         <Button
           button={button}

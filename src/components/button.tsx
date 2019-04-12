@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { ActionButton, TabButton, ButtonType } from '../misc-types'
-import { Coordinate } from '../sounds/types'
+import { ButtonType, EitherButton } from '../misc-types'
 import { MdClose, MdDragHandle, MdEdit } from 'react-icons/md'
 import EditActionButtonForm from './button-creation/edit-action-button-form'
 import EditTabButtonForm from './button-creation/edit-tab-button-form'
@@ -18,14 +17,6 @@ interface DraggableProps {
   selected?: boolean
 }
 
-export interface ActionButtonWithCoords extends ActionButton {
-  coords: Coordinate
-}
-
-export interface TabButtonWithCoords extends TabButton {
-  coords: Coordinate
-}
-
 interface ButtonDisplayProperties {
   height: number
   width: number
@@ -34,7 +25,7 @@ interface ButtonDisplayProperties {
 }
 
 interface Props extends DraggableProps {
-  button: ActionButtonWithCoords | TabButtonWithCoords
+  button: EitherButton
   onTrigger: () => void
   displayProperties?: ButtonDisplayProperties
   onMouseEnter?: () => void

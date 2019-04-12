@@ -74,6 +74,8 @@ export interface ActionButton extends ButtonBase<ButtonType.Action> {
   end: number
 }
 
+export type EitherButton = ActionButton | TabButton
+
 export function isActionButton(button: ButtonBase): button is ActionButton {
   return button.type === ButtonType.Action
 }

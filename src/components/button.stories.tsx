@@ -3,13 +3,12 @@ import { action } from '@storybook/addon-actions'
 import { withKnobs, number } from '@storybook/addon-knobs'
 
 import { storiesOf } from '@storybook/react'
-import Button, { ActionButtonWithCoords, TabButtonWithCoords } from './button'
-import { ButtonType } from '../misc-types'
+import Button from './button'
+import { ButtonType, ActionButton, TabButton } from '../misc-types'
 
 import Draggable from 'react-draggable'
 
-const defaultActionButton: ActionButtonWithCoords = {
-  coords: { x: 0, y: 0 },
+const defaultActionButton: ActionButton = {
   type: ButtonType.Action,
   title: 'some title',
   keyboardKey: 'a',
@@ -20,8 +19,7 @@ const defaultActionButton: ActionButtonWithCoords = {
   end: 4
 }
 
-const defaultTabButton: TabButtonWithCoords = {
-  coords: { x: 0, y: 0 },
+const defaultTabButton: TabButton = {
   type: ButtonType.Tab,
   title: 'some title',
   keyboardKey: '1',

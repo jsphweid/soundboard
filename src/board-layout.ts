@@ -1,4 +1,5 @@
 import { KeyboardKey } from './misc-types'
+import GridLookup from './misc/grid-lookup'
 
 export const keyboardKeys: KeyboardKey[][] = [
   ['1', '2', '3', '4', '5'],
@@ -9,3 +10,5 @@ export const keyboardKeys: KeyboardKey[][] = [
 
 export const numKeysHigh = keyboardKeys.length
 export const numKeysWide = keyboardKeys[0].length
+
+export const gridLookup = new GridLookup(keyboardKeys)
