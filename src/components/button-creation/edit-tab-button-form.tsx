@@ -5,16 +5,10 @@ import { Paper, Grid, Button } from '@material-ui/core'
 import TextField from './text-field'
 import { EditFormProps } from './edit-form-types'
 
-const validate = ({ title, url, start, end }: any) => {
+const validate = ({ title }: any) => {
   const errors: any = {}
   if (!title) {
     errors.title = 'Required'
-  }
-  if (!url) {
-    errors.url = 'Required'
-  }
-  if (start && end && start > end) {
-    errors.start = 'Too High'
   }
   return errors
 }

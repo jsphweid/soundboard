@@ -65,6 +65,7 @@ export interface ButtonBase<Type extends ButtonType = ButtonType> {
   title: string
   keyboardKey: KeyboardKey
   id: string
+  onTrigger?: () => void
 }
 
 export interface ActionButton extends ButtonBase<ButtonType.Action> {

@@ -71,9 +71,25 @@ export default class Board extends React.Component<Props, State> {
     // }
   }
 
+  public componentDidUpdate() {
+    const { buttonThatsBeingDragged } = this.state
+    if (buttonThatsBeingDragged) {
+      const { id } = buttonThatsBeingDragged
+      const possiblyNewButtonVersion = this.props.buttons.find(b => b.id === id)
+      if (
+        JSON.stringify(possiblyNewButtonVersion) !==
+        JSON.stringify(buttonThatsBeingDragged)
+      ) {
+        this.setState({
+          buttonThatsBeingDragged: possiblyNewButtonVersion || null
+        })
+      }
+    }
+  }
+
   private handleDragStop = (e: any) => {
     const { buttonThatsBeingDragged } = this.state
-    const coords = { x: e.layerX, y: e.layerY }
+    const coords = { x: e.pageX, y: e.pageY }
     const { boardHeight, boardWidth } = this.state.layout
     const keyboardKeyDestination = determineKeyboardKeyDestination(
       boardWidth,
@@ -129,14 +145,11 @@ export default class Board extends React.Component<Props, State> {
         bounds="parent"
         handle=".handle"
         position={{ x: 0, y: 0 }}
-        onDrag={() => console.log('onDrag')}
-        onStart={() => console.log('onStart')}
         onStop={this.handleDragStop}
       >
         <Button
           button={button}
           displayProperties={{ height: itemHeight, width: itemWidth, x, y }}
-          onTrigger={() => console.log('--')}
           onMouseEnter={() =>
             this.setState({ buttonThatsBeingDragged: button })
           }
@@ -153,8 +166,12 @@ export default class Board extends React.Component<Props, State> {
   }
 
   private renderStableButtons() {
+    const { buttonThatsBeingDragged } = this.state
     return this.props.buttons
-      .filter(button => button !== this.state.buttonThatsBeingDragged)
+      .filter(
+        ({ id }) =>
+          !buttonThatsBeingDragged || id !== buttonThatsBeingDragged.id
+      )
       .map(this.renderButton)
   }
 

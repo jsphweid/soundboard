@@ -35,9 +35,9 @@ export default class LoadBoardModal extends React.Component<any, State> {
 
   private handleLoadClick = () => {
     const { closeLoadBoardModal } = getStores().loadBoard
-    const { reloadEverythingFromValidJSON } = getStores().actionButtons
+    // const { reloadEverythingFromValidJSON } = getStores().actionButtons
 
-    reloadEverythingFromValidJSON(JSON.parse(this.state.rawJSONInputText))
+    // reloadEverythingFromValidJSON(JSON.parse(this.state.rawJSONInputText))
 
     closeLoadBoardModal()
   }

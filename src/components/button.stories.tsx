@@ -31,7 +31,7 @@ const defaultTabButton: TabButton = {
 ].forEach(({ button, buttonType }) => {
   const stories = storiesOf('Button', module).add(
     `${buttonType} button`,
-    () => <Button button={button} onTrigger={action('clicked')} />
+    () => <Button button={button} />
   )
 
   stories.addDecorator(withKnobs)
@@ -45,7 +45,6 @@ const defaultTabButton: TabButton = {
       <Button
         button={button}
         displayProperties={{ height, width, x: 0, y: 0 }}
-        onTrigger={action('clicked')}
       />
     )
   })
@@ -63,10 +62,7 @@ storiesOf('Button', module).add(`draggable`, () => {
       onDrag={() => console.log('ondrag')}
       onStop={() => console.log('onstop')}
     >
-      <Button
-        button={defaultActionButton}
-        onTrigger={() => console.log('--')}
-      />
+      <Button button={defaultActionButton} />
     </Draggable>
   )
 })

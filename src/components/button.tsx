@@ -3,6 +3,8 @@ import { ButtonType, EitherButton } from '../misc-types'
 import { MdClose, MdDragHandle, MdEdit } from 'react-icons/md'
 import EditActionButtonForm from './button-creation/edit-action-button-form'
 import EditTabButtonForm from './button-creation/edit-tab-button-form'
+import { getStores } from '../stores'
+import { observer } from 'mobx-react'
 
 const css = require('./button.module.css')
 
@@ -26,7 +28,6 @@ interface ButtonDisplayProperties {
 
 interface Props extends DraggableProps {
   button: EitherButton
-  onTrigger: () => void
   displayProperties?: ButtonDisplayProperties
   onMouseEnter?: () => void
   // onDataUpdate: (data: T) => void
@@ -43,23 +44,9 @@ interface State {
   editing: boolean
 }
 
-// const handleSave = ({ url, title, start, end }: any) => {
-//   const { tileWithButtonCreator, cancel } = getStores().buttonCreator
-//   const { addButton } = getStores().actionButtons
-//   const { tabId, keyboardKey } = tileWithButtonCreator as TileIdentifier
-//   addButton({
-//     url,
-//     start,
-//     end,
-//     title,
-//     type: ButtonType.Action,
-//     id: makeRandomId(),
-//     tabId,
-//     keyboardKey
-//   })
-//   cancel()
-// }
+// TODO: refactor so all of the getStores() are out of here...
 
+@observer
 export default class Button extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
@@ -69,12 +56,16 @@ export default class Button extends React.Component<Props, State> {
   }
 
   private renderEditForm() {
+    const { button } = this.props
     switch (this.props.button.type) {
       case ButtonType.Action:
         return (
           <EditActionButtonForm
             onCancel={() => this.setState({ editing: false })}
-            onSave={data => console.log('saving data', data)}
+            onSave={data => {
+              this.setState({ editing: false })
+              getStores().buttons.updateButton(button.id, data)
+            }}
             initialData={this.props.button}
           />
         )
@@ -82,7 +73,10 @@ export default class Button extends React.Component<Props, State> {
         return (
           <EditTabButtonForm
             onCancel={() => this.setState({ editing: false })}
-            onSave={data => console.log('saving data', data)}
+            onSave={data => {
+              this.setState({ editing: false })
+              getStores().buttons.updateButton(button.id, data)
+            }}
             initialData={this.props.button}
           />
         )
@@ -92,10 +86,17 @@ export default class Button extends React.Component<Props, State> {
   }
 
   private renderMainContent() {
+    const activeId = getStores().buttons.activeTabId
+    const { id, title, onTrigger } = this.props.button
+    if (activeId === id) {
+      return
+    }
     return this.state.editing ? (
       this.renderEditForm()
     ) : (
-      <div className={css.bigButton} />
+      <button className={css.bigButton} onClick={onTrigger}>
+        {title}
+      </button>
     )
   }
 
@@ -112,6 +113,7 @@ export default class Button extends React.Component<Props, State> {
     } = this.props
 
     const { height, width, x, y } = displayProperties || defaultDisplayProps
+    const { button } = this.props
     return (
       <div
         onMouseEnter={onMouseEnter}
@@ -121,7 +123,8 @@ export default class Button extends React.Component<Props, State> {
           height: `${height}px`,
           width: `${width}px`,
           left: `${x}px`,
-          top: `${y}px`
+          top: `${y}px`,
+          background: `${button.type === ButtonType.Tab ? 'black' : ''}`
         }}
         {...{
           onTouchEnd,
@@ -136,7 +139,10 @@ export default class Button extends React.Component<Props, State> {
             onClick={() => this.setState({ editing: true })}
           />
           <MdDragHandle className={`${css.icon} handle`} />
-          <MdClose className={css.icon} />
+          <MdClose
+            className={css.icon}
+            onClick={() => getStores().buttons.deleteButton(button.id)}
+          />
         </div>
         {this.renderMainContent()}
       </div>

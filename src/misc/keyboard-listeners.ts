@@ -14,10 +14,10 @@ export function createKeyboardListeners() {
   keyMap.Escape = () => {
     getStores().loadBoard.closeLoadBoardModal()
     getStores().saveBoard.closeSaveBoardModal()
-    getStores().soundPlayer.killAllSounds()
+    getStores().buttons.killAllSounds()
   }
-  keyMap.Backspace = () => getStores().soundPlayer.killAllSounds()
-  keyMap.Delete = () => getStores().soundPlayer.killAllSounds()
+  keyMap.Backspace = () => getStores().buttons.killAllSounds()
+  keyMap.Delete = () => getStores().buttons.killAllSounds()
 
   initKeyListeners(keyMap)
 }

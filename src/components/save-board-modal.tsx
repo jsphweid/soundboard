@@ -24,18 +24,18 @@ export default class SaveBoardModal extends React.Component<any, State> {
   }
 
   private handleShare = () => {
-    const json = getStores().actionButtons.getSerializedActionButtons()
+    // const json = getStores().actionButtons.getSerializedActionButtons()
 
     this.setState({ isLoading: true })
-    Axios.post(apiBaseUrl, json)
-      .then(response => this.setState({ id: response.data.id }))
-      .catch(error => {
-        this.setState({
-          error: 'Unfortunately the request to upload your board failed.'
-        })
-        console.log(error)
-      })
-      .finally(() => this.setState({ isLoading: false }))
+    // Axios.post(apiBaseUrl, json)
+    //   .then(response => this.setState({ id: response.data.id }))
+    //   .catch(error => {
+    //     this.setState({
+    //       error: 'Unfortunately the request to upload your board failed.'
+    //     })
+    //     console.log(error)
+    //   })
+    //   .finally(() => this.setState({ isLoading: false }))
   }
 
   public render() {

@@ -1,56 +1,82 @@
+import { observable, computed, action, reaction } from 'mobx'
 import {
-  observable,
-  computed,
-  action,
-  transaction,
-  reaction,
-  isAction
-} from 'mobx'
-import {
-  ActionButton,
   KeyboardKey,
   EitherButton,
   isActionButton,
-  isTabButton
+  isTabButton,
+  ActionButton
 } from '../misc-types'
-import { getStores } from '.'
+// import { getStores } from '.'
 import { defaultActionButtons, defaultTabButtons } from '../misc/constants'
-import { ButtonType } from '../misc-types'
+import { Sound } from '../sounds/types'
+import URLSound from '../sounds/url-source'
+
+export function makeSoundFromButton(button: ActionButton): Sound {
+  switch (true) {
+    default:
+      return new URLSound(button)
+  }
+}
 
 export default class Buttons {
-  constructor() {
+  constructor(buttons?: EitherButton[]) {
+    if (buttons) {
+      this.buttons = buttons
+    }
+
+    if (typeof window !== 'undefined') {
+      defaultActionButtons.forEach(b => {
+        this.soundMap.set(b.id, makeSoundFromButton(b))
+      })
+    }
     // sync soundplay buttons
-    // reaction(
-    //   () => JSON.stringify(this.actionButtons),
-    //   () => {
-    //     const { soundMap } = getStores().soundPlayer
-    //     // only adds buttons... memory overflow...!?!
-    //     this.actionButtons.forEach(button => {
-    //       const sound = soundMap.get(button.id)
-    //       if (!sound) {
-    //         soundMap.set(button.id, makeSoundFromButton(button))
-    //       }
-    //     })
-    //   }
-    // )
+    reaction(
+      () => JSON.stringify(this.actionButtons),
+      () => {
+        this.soundMap.clear()
+        this.actionButtons.forEach(button => {
+          this.soundMap.set(button.id, makeSoundFromButton(button))
+        })
+      }
+    )
   }
 
-  // @computed
-  // get currentActionButtonsIndexedByKey() {
-  //   const keys = {} as { [key in KeyboardKey]: ActionButton | undefined }
-  //   this.buttons
-  //     .filter(isActionButton)
-  //     .filter(button => button.tabId === this.activeTabId)
-  //     .forEach(button => (keys[button.keyboardKey] = button))
-  //   return keys
-  // }
+  @observable soundMap = new Map<string, Sound>()
+
+  attachTriggers = (button: EitherButton): EitherButton => {
+    const onTrigger = isActionButton(button)
+      ? () => this.playSound(button.id)
+      : () => this.changeTabs(button.id)
+    return {
+      ...button,
+      onTrigger
+    }
+  }
+
+  @action playSound = (id: string) => {
+    const sound = this.soundMap.get(id)
+    if (!sound) {
+      console.log(`sound ${id} not here......`)
+      return
+    }
+    sound.trigger()
+  }
+
+  @action changeTabs = (tabId: string) => {
+    this.activeTabId = tabId
+  }
+
+  @action
+  killAllSounds = () => {
+    Array.from(this.soundMap.values()).forEach(sound => sound.stop())
+  }
 
   @observable activeTabId: string = 'tab1'
 
   @observable buttons: EitherButton[] = [
     ...defaultActionButtons,
     ...defaultTabButtons
-  ]
+  ].map(this.attachTriggers)
 
   @computed
   get tabButtons() {
@@ -78,7 +104,7 @@ export default class Buttons {
 
   @action
   reloadEverythingFromValidJSON = (newButtons: EitherButton[]) => {
-    getStores().soundPlayer.soundMap.clear()
+    this.soundMap.clear()
     this.buttons = newButtons
   }
 
@@ -87,32 +113,54 @@ export default class Buttons {
   }
 
   @action
-  moveActionButton(button: ActionButton, destination: KeyboardKey) {
-    // const { activeTabId } = getStores().tabButtons
-    // const sourceIndex = this.actionButtons.findIndex(t => t.id === button.id)
-    // const destinationIndex = this.actionButtons.findIndex(
-    //   b => b.keyboardKey === destination && b.tabId === activeTabId
-    // )
-    // if (sourceIndex > -1) {
-    //   transaction(() => {
-    //     if (destinationIndex > -1) {
-    //       this.actionButtons[destinationIndex].keyboardKey = button.keyboardKey
-    //       this.actionButtons[destinationIndex].tabId = button.tabId
-    //     }
-    //     this.actionButtons[sourceIndex].tabId = activeTabId
-    //     this.actionButtons[sourceIndex].keyboardKey = destination
-    //   })
-    // }
+  moveButton = (button: EitherButton, destination: KeyboardKey) => {
+    const sourceIndex = this.buttons.findIndex(t => t.id === button.id)
+    const destinationActionIndex = this.buttons.findIndex(b => {
+      return (
+        isActionButton(b) &&
+        b.keyboardKey === destination &&
+        b.tabId === this.activeTabId
+      )
+    })
+    const destinationTabIndex = this.buttons.findIndex(b => {
+      return isTabButton(b) && b.keyboardKey === destination
+    })
+    const destinationIndex = Math.max(
+      destinationActionIndex,
+      destinationTabIndex
+    )
+    if (sourceIndex > -1) {
+      if (destinationIndex > -1) {
+        const destinationButton = this.buttons[destinationIndex]
+        destinationButton.keyboardKey = button.keyboardKey
+        if (isActionButton(destinationButton) && isActionButton(button)) {
+          destinationButton.tabId = button.tabId
+        }
+      }
+      const sourceButton = this.buttons[sourceIndex]
+      sourceButton.keyboardKey = destination
+      if (isActionButton(sourceButton)) {
+        sourceButton.tabId = this.activeTabId
+      }
+    }
   }
 
-  // public getButtonByKeyboardKey(
-  //   keyboardKey: KeyboardKey,
-  //   tabId = getStores().tabButtons.activeTabId
-  // ): ActionButton | undefined {
-  //   return this.buttons.find(
-  //     button => button.keyboardKey === keyboardKey && button.tabId === tabId
-  //   )
-  // }
+  public getButtonInCurrentView(
+    keyboardKey: KeyboardKey
+  ): EitherButton | undefined {
+    return this.currentButtonsInTab.find(b => b.keyboardKey === keyboardKey)
+  }
 
-  public deleteButton(buttonId: string) {}
+  public updateButton(buttonId: string, updates: Partial<EitherButton>) {
+    console.log('update called')
+    const i = this.buttons.findIndex(b => b.id === buttonId)
+    console.log('i', i)
+    if (i >= 0) {
+      this.buttons[i] = { ...this.buttons[i], ...updates } as any
+    }
+  }
+
+  public deleteButton(buttonId: string) {
+    this.buttons = this.buttons.filter(b => b.id !== buttonId)
+  }
 }

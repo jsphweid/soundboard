@@ -1,12 +1,4 @@
 import { Coordinate } from '../sounds/types'
-import {
-  ButtonBase,
-  isActionButton,
-  isTabButton,
-  KeyboardKey,
-  isKeyboardKey
-} from '../misc-types'
-// import { getStores } from '../stores'
 import { v4 as uuidGen } from 'uuid'
 import { numKeysWide, numKeysHigh, gridLookup } from '../board-layout'
 
@@ -21,32 +13,6 @@ export function determineKeyboardKeyDestination(
     x >= numKeysWide || y >= numKeysHigh || x < 0 || y < 0 ? null : { x, y }
   return position ? gridLookup.getKeyFromCoords(position) : null
 }
-
-// export function pointInSection(
-//   section: LayoutSection,
-//   point: Coordinate
-// ): boolean {
-//   const { x, y, height, width } = section
-//   return (
-//     point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
-//   )
-// }
-
-// export function moveButton(button: ButtonBase, destination: KeyboardKey) {
-//   if (!isKeyboardKey(destination)) return
-
-//   if (isActionButton(button)) {
-//     return getStores().actionButtons.moveActionButton(button, destination)
-//   }
-
-//   if (isTabButton(button)) {
-//     return getStores().tabButtons.moveTabButton(button, destination)
-//   }
-
-//   console.log(
-//     'An action key can only be moved to a valid action key tile. A tab key can only be moved to valid tab key tile.'
-//   )
-// }
 
 export interface DropdownOption {
   label: string

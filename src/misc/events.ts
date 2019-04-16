@@ -2,17 +2,12 @@ import { getStores } from '../stores'
 import { KeyboardKey, isKeyboardKey } from '../misc-types'
 
 export function handleKeyPressOrClick(key: KeyboardKey) {
-  const { actionButtons, tabButtons, soundPlayer } = getStores()
+  const { buttons } = getStores()
 
   if (isKeyboardKey(key)) {
-    const button = tabButtons.getButtonByKeyboardKey(key)
-    if (button) {
-      tabButtons.changeTab(button.id)
-    }
-  } else {
-    const button = actionButtons.getButtonByKeyboardKey(key)
-    if (button) {
-      soundPlayer.triggerSound(button.id)
+    const button = buttons.getButtonInCurrentView(key)
+    if (button && button.onTrigger) {
+      button.onTrigger()
     }
   }
 }

@@ -2,7 +2,7 @@
   background: rgb(184, 143, 112);
   height: 100%;
   width: 100%;
-  border-radius: 4px;
+  opacity: 0.7;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -22,12 +22,20 @@
   flex: 1;
   height: 100%;
   margin: 8px;
+  text-align: center;
+  font-size: 4vh;
   background: rgb(106, 106, 238);
   border-radius: 8px;
+  cursor: pointer;
+  outline: none;
 }
 
 .icon {
   height: 100%;
   width: 33.3333%;
   cursor: pointer;
+}
+
+.tab {
+  background-color: black;
 }

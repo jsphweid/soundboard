@@ -5,20 +5,16 @@ import './index.css'
 import './react-contextmenu.css'
 import LoadBoardModal from '../components/load-board-modal'
 import SaveBoardModal from '../components/save-board-modal'
-import { KeyboardKey, EitherButton } from '../misc-types'
 import { getStores } from '../stores'
+import { observer } from 'mobx-react'
 
-const handleButtonMove = (button: EitherButton, key: KeyboardKey) => {
-  console.log('button', button, key)
-}
-
-export default () => (
+export default observer(() => (
   <div className="prevent-selection">
     <Board
-      handleMove={handleButtonMove}
+      handleMove={getStores().buttons.moveButton}
       buttons={getStores().buttons.currentButtonsInTab}
     />
     <LoadBoardModal />
     <SaveBoardModal />
   </div>
-)
+))
