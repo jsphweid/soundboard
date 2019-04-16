@@ -6,7 +6,6 @@ import {
   isTabButton,
   ActionButton
 } from '../misc-types'
-// import { getStores } from '.'
 import { defaultActionButtons, defaultTabButtons } from '../misc/constants'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
@@ -31,7 +30,7 @@ export default class Buttons {
     }
 
     reaction(
-      () => JSON.stringify(this.buttons),
+      () => JSON.stringify(this.rawButtons),
       () => {
         this.snapshotRecentlyTaken = false
       }
@@ -170,11 +169,9 @@ export default class Buttons {
   }
 
   public updateButton(buttonId: string, updates: Partial<EitherButton>) {
-    console.log('update called')
-    const i = this.buttons.findIndex(b => b.id === buttonId)
-    console.log('i', i)
+    const i = this.rawButtons.findIndex(b => b.id === buttonId)
     if (i >= 0) {
-      this.buttons[i] = { ...this.buttons[i], ...updates } as any
+      this.rawButtons[i] = { ...this.rawButtons[i], ...updates } as any
     }
   }
 

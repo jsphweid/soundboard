@@ -1,6 +1,6 @@
 .details {
   width: 100%;
-  background: #6c656b;
+  background: rgb(184, 143, 112, 0.7);
   padding: 24px;
 }
 
@@ -9,13 +9,8 @@
   margin: 0 auto;
 }
 
-.details button {
-  width: 15vw;
-  height: 5vh;
-  font-size: 20px;
-}
-
 .title {
+  z-index: 1000;
   text-align: center;
   text-transform: uppercase;
 }

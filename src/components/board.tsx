@@ -179,6 +179,12 @@ export default class Board extends React.Component<Props, State> {
   }
 
   public render() {
+    const { everythingLoaded } = this.state
+    const { itemHeight, itemWidth } = this.state.layout
+
+    // hack to hide stuff until height and widths are accurate
+    const renderStuff = everythingLoaded && itemHeight > 30 && itemWidth > 30
+
     return (
       <ResizeAware
         ref={(el: any) => (this.els.board = el)}
@@ -189,12 +195,17 @@ export default class Board extends React.Component<Props, State> {
         style={{
           position: 'relative',
           width: '100vw',
-          height: `100vh`
+          transition: `height 1s`,
+          height: everythingLoaded ? `100vh` : `0vh`
         }}
       >
-        {this.renderTiles()}
-        {this.renderStableButtons()}
-        {this.renderHoveredButton()}
+        {renderStuff
+          ? [
+              this.renderTiles(),
+              this.renderStableButtons(),
+              this.renderHoveredButton()
+            ]
+          : null}
       </ResizeAware>
     )
   }

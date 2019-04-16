@@ -1,6 +1,7 @@
 import { Coordinate } from '../sounds/types'
 import { v4 as uuidGen } from 'uuid'
 import { numKeysWide, numKeysHigh, gridLookup } from '../board-layout'
+import { KeyboardKey, ActionButton, ButtonType, TabButton } from '../misc-types'
 
 export function determineKeyboardKeyDestination(
   boardWidth: number,
@@ -47,3 +48,24 @@ export function audioUrlIsValid(url: string): Promise<boolean> {
     })
     .catch(() => false)
 }
+
+export const makeBlankActionButton = (
+  keyboardKey: KeyboardKey,
+  tabId: string
+): ActionButton => ({
+  id: generateRandomId(),
+  type: ButtonType.Action,
+  title: '',
+  keyboardKey,
+  tabId,
+  url: '',
+  start: 0,
+  end: 0
+})
+
+export const makeBlankTabButton = (keyboardKey: KeyboardKey): TabButton => ({
+  id: generateRandomId(),
+  type: ButtonType.Tab,
+  title: '',
+  keyboardKey
+})

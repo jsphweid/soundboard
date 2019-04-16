@@ -3,6 +3,7 @@ import { getStores } from '../stores'
 const css = require('./details.module.css')
 import axios from 'axios'
 import { apiBaseUrl } from '../misc/constants'
+import Button from '@material-ui/core/Button'
 
 interface State {
   isLoading: boolean
@@ -57,6 +58,9 @@ export default class Details extends React.Component<any, State> {
   public render() {
     const { isLoading } = this.state
     const { snapshotRecentlyTaken } = getStores().buttons
+
+    console.log(snapshotRecentlyTaken)
+
     return (
       <div className={css.details}>
         <div>
@@ -77,12 +81,14 @@ export default class Details extends React.Component<any, State> {
             "Share" button below.
           </p>
 
-          <button
+          <Button
+            type="button"
+            variant="contained"
             disabled={isLoading || snapshotRecentlyTaken}
             onClick={this.handleShare}
           >
             {isLoading ? 'Loading...' : 'Share'}
-          </button>
+          </Button>
           {this.renderResultSection()}
         </div>
       </div>
