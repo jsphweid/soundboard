@@ -30,24 +30,3 @@ storiesOf('Board', module)
       buttons={[defaultActionButton, defaultTabButton]}
     />
   ))
-
-// stories.addDecorator(withKnobs)
-
-// // Knobs as dynamic variables.
-// stories.add(`a few buttons`, () => {
-//   const height = number('height', 400)
-//   const width = number('width', 400)
-
-//   return (
-//     <div
-//       style={{
-//         height: `${height}px`,
-//         width: `${width}px`,
-//         backgroundColor: '#999999',
-//         padding: `8px`
-//       }}
-//     >
-//       <Button button={button} onClick={action('clicked')} />
-//     </div>
-//   )
-// })

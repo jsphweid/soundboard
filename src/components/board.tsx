@@ -12,6 +12,10 @@ import {
 } from '../board-layout'
 import { determineKeyboardKeyDestination } from '../misc/helpers'
 import { KeyboardKey, EitherButton } from '../misc-types'
+import axios from 'axios'
+import { apiBaseUrl } from '../misc/constants'
+import * as QueryString from 'query-string'
+import { getStores } from '../stores'
 
 const css = require('./board.module.css')
 
@@ -57,18 +61,17 @@ export default class Board extends React.Component<Props, State> {
       width: clientWidth,
       height: clientHeight
     })
-    // const query = QueryString.parse(location.search)
-    // if (query.board) {
-    //   Axios.get(`${apiBaseUrl}/${query.board}`)
-    //     .then(response => {
-    //       getStores().actionButtons.reloadEverythingFromValidJSON(
-    //         response.data.board
-    //       )
-    //     })
-    //     .finally(() => this.setState({ everythingLoaded: true }))
-    // } else {
-    //   this.setState({ everythingLoaded: true })
-    // }
+    const query = QueryString.parse(location.search)
+    if (query.board) {
+      axios
+        .get(`${apiBaseUrl}/${query.board}`)
+        .then(response => {
+          getStores().buttons.reloadEverythingFromValidJSON(response.data.board)
+        })
+        .finally(() => this.setState({ everythingLoaded: true }))
+    } else {
+      this.setState({ everythingLoaded: true })
+    }
   }
 
   public componentDidUpdate() {
@@ -181,6 +184,7 @@ export default class Board extends React.Component<Props, State> {
         ref={(el: any) => (this.els.board = el)}
         onlyEvent={true}
         onResize={this.handleResize}
+        className="prevent-selection"
         id="sb-board"
         style={{
           position: 'relative',

@@ -1,8 +1,5 @@
 import { observable } from 'mobx'
-import SoundPlayerStore from './sound-player'
 import { createKeyboardListeners } from '../misc/keyboard-listeners'
-import LoadBoard from './load-board'
-import SaveBoard from './save-board'
 import Buttons from './buttons'
 
 let stores = initialize()
@@ -10,15 +7,9 @@ let stores = initialize()
 createKeyboardListeners()
 
 function initialize() {
-  const soundPlayer = new SoundPlayerStore()
-  const loadBoard = new LoadBoard()
-  const saveBoard = new SaveBoard()
   const buttons = new Buttons()
 
   return observable({
-    soundPlayer,
-    loadBoard,
-    saveBoard,
     buttons
   })
 }

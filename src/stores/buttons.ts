@@ -21,7 +21,7 @@ export function makeSoundFromButton(button: ActionButton): Sound {
 export default class Buttons {
   constructor(buttons?: EitherButton[]) {
     if (buttons) {
-      this.buttons = buttons
+      this.rawButtons = buttons
     }
 
     if (typeof window !== 'undefined') {
@@ -29,7 +29,14 @@ export default class Buttons {
         this.soundMap.set(b.id, makeSoundFromButton(b))
       })
     }
-    // sync soundplay buttons
+
+    reaction(
+      () => JSON.stringify(this.buttons),
+      () => {
+        this.snapshotRecentlyTaken = false
+      }
+    )
+
     reaction(
       () => JSON.stringify(this.actionButtons),
       () => {
@@ -42,6 +49,12 @@ export default class Buttons {
   }
 
   @observable soundMap = new Map<string, Sound>()
+  @observable snapshotRecentlyTaken = true
+
+  @action
+  registerSnapshotTaken = () => {
+    this.snapshotRecentlyTaken = true
+  }
 
   attachTriggers = (button: EitherButton): EitherButton => {
     const onTrigger = isActionButton(button)
@@ -73,10 +86,15 @@ export default class Buttons {
 
   @observable activeTabId: string = 'tab1'
 
-  @observable buttons: EitherButton[] = [
+  @observable rawButtons: EitherButton[] = [
     ...defaultActionButtons,
     ...defaultTabButtons
-  ].map(this.attachTriggers)
+  ]
+
+  @computed
+  get buttons() {
+    return this.rawButtons.map(this.attachTriggers)
+  }
 
   @computed
   get tabButtons() {
@@ -105,7 +123,7 @@ export default class Buttons {
   @action
   reloadEverythingFromValidJSON = (newButtons: EitherButton[]) => {
     this.soundMap.clear()
-    this.buttons = newButtons
+    this.rawButtons = newButtons
   }
 
   getSerializedButtons = (): string => {
@@ -114,15 +132,15 @@ export default class Buttons {
 
   @action
   moveButton = (button: EitherButton, destination: KeyboardKey) => {
-    const sourceIndex = this.buttons.findIndex(t => t.id === button.id)
-    const destinationActionIndex = this.buttons.findIndex(b => {
+    const sourceIndex = this.rawButtons.findIndex(t => t.id === button.id)
+    const destinationActionIndex = this.rawButtons.findIndex(b => {
       return (
         isActionButton(b) &&
         b.keyboardKey === destination &&
         b.tabId === this.activeTabId
       )
     })
-    const destinationTabIndex = this.buttons.findIndex(b => {
+    const destinationTabIndex = this.rawButtons.findIndex(b => {
       return isTabButton(b) && b.keyboardKey === destination
     })
     const destinationIndex = Math.max(
@@ -131,13 +149,13 @@ export default class Buttons {
     )
     if (sourceIndex > -1) {
       if (destinationIndex > -1) {
-        const destinationButton = this.buttons[destinationIndex]
+        const destinationButton = this.rawButtons[destinationIndex]
         destinationButton.keyboardKey = button.keyboardKey
         if (isActionButton(destinationButton) && isActionButton(button)) {
           destinationButton.tabId = button.tabId
         }
       }
-      const sourceButton = this.buttons[sourceIndex]
+      const sourceButton = this.rawButtons[sourceIndex]
       sourceButton.keyboardKey = destination
       if (isActionButton(sourceButton)) {
         sourceButton.tabId = this.activeTabId
@@ -161,6 +179,6 @@ export default class Buttons {
   }
 
   public deleteButton(buttonId: string) {
-    this.buttons = this.buttons.filter(b => b.id !== buttonId)
+    this.rawButtons = this.buttons.filter(b => b.id !== buttonId)
   }
 }
