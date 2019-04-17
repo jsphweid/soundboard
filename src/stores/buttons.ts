@@ -115,11 +115,6 @@ export default class Buttons {
   }
 
   @action
-  addButton = (button: EitherButton) => {
-    this.buttons.push(button)
-  }
-
-  @action
   reloadEverythingFromValidJSON = (newButtons: EitherButton[]) => {
     this.soundMap.clear()
     this.rawButtons = newButtons
@@ -127,6 +122,11 @@ export default class Buttons {
 
   getSerializedButtons = (): string => {
     return JSON.stringify(this.buttons)
+  }
+
+  @action
+  addButton = (button: EitherButton) => {
+    this.rawButtons.push(button)
   }
 
   @action

@@ -59,8 +59,6 @@ export default class Details extends React.Component<any, State> {
     const { isLoading } = this.state
     const { snapshotRecentlyTaken } = getStores().buttons
 
-    console.log(snapshotRecentlyTaken)
-
     return (
       <div className={css.details}>
         <div>

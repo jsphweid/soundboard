@@ -12,8 +12,6 @@ export function createKeyboardListeners() {
   })
 
   keyMap.Escape = () => {
-    getStores().loadBoard.closeLoadBoardModal()
-    getStores().saveBoard.closeSaveBoardModal()
     getStores().buttons.killAllSounds()
   }
   keyMap.Backspace = () => getStores().buttons.killAllSounds()

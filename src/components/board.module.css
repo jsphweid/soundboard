@@ -1,7 +1,6 @@
 .tile {
   float: left;
   position: relative;
-  pointer-events: none;
 }
 
 .tileNum {

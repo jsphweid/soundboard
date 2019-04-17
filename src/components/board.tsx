@@ -10,12 +10,17 @@ import {
   numKeysWide,
   gridLookup
 } from '../board-layout'
-import { determineKeyboardKeyDestination } from '../misc/helpers'
+import {
+  determineKeyboardKeyDestination,
+  makeBlankTabButton
+} from '../misc/helpers'
 import { KeyboardKey, EitherButton } from '../misc-types'
 import axios from 'axios'
 import { apiBaseUrl } from '../misc/constants'
 import * as QueryString from 'query-string'
 import { getStores } from '../stores'
+import NewButton from './new-button'
+import { makeBlankActionButton } from '../misc/helpers'
 
 const css = require('./board.module.css')
 
@@ -30,6 +35,7 @@ interface State {
   buttonThatsBeingDragged: EitherButton | null
   everythingLoaded: boolean
   layout: Layout
+  newButton: { keyboardKey: KeyboardKey; tabId: string } | null
 }
 
 interface Props {
@@ -45,6 +51,7 @@ export default class Board extends React.Component<Props, State> {
     super(props)
     this.state = {
       buttonThatsBeingDragged: null,
+      newButton: null,
       everythingLoaded: false,
       layout: {
         boardHeight: 0,
@@ -120,16 +127,49 @@ export default class Board extends React.Component<Props, State> {
     const tiles: JSX.Element[] = []
 
     const { itemHeight, itemWidth } = this.state.layout
+    const { newButton } = this.state
+    const { activeTabId, addButton } = getStores().buttons
 
     keyboardKeys.forEach(row =>
       row.forEach(key => {
+        const tileHasNewButton =
+          newButton &&
+          newButton.keyboardKey === key &&
+          newButton.tabId === activeTabId
         tiles.push(
           <div
             key={`tile-${key}`}
             className={css.tile}
-            style={{ height: itemHeight, width: itemWidth }}
+            style={{
+              height: itemHeight,
+              width: itemWidth
+            }}
+            onDoubleClick={
+              tileHasNewButton
+                ? undefined
+                : () =>
+                    this.setState({
+                      newButton: {
+                        keyboardKey: key,
+                        tabId: activeTabId
+                      }
+                    })
+            }
           >
-            <div className={css.tileNum}>{key}</div>
+            {tileHasNewButton ? (
+              <NewButton
+                onNewTab={() => {
+                  addButton(makeBlankTabButton(key))
+                  this.setState({ newButton: null })
+                }}
+                onNewAction={() => {
+                  addButton(makeBlankActionButton(key, activeTabId))
+                  this.setState({ newButton: null })
+                }}
+              />
+            ) : (
+              <div className={css.tileNum}>{key}</div>
+            )}
           </div>
         )
       })
