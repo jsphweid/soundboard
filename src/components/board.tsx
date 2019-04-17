@@ -14,7 +14,7 @@ import {
   determineKeyboardKeyDestination,
   makeBlankTabButton
 } from '../misc/helpers'
-import { KeyboardKey, EitherButton } from '../misc-types'
+import { KeyboardKey, EitherButton, isActionButton } from '../misc-types'
 import axios from 'axios'
 import { apiBaseUrl } from '../misc/constants'
 import * as QueryString from 'query-string'
@@ -32,6 +32,7 @@ export interface Layout {
 }
 
 interface State {
+  buttonThatsBeingHovered: EitherButton | null
   buttonThatsBeingDragged: EitherButton | null
   everythingLoaded: boolean
   layout: Layout
@@ -51,6 +52,7 @@ export default class Board extends React.Component<Props, State> {
     super(props)
     this.state = {
       buttonThatsBeingDragged: null,
+      buttonThatsBeingHovered: null,
       newButton: null,
       everythingLoaded: false,
       layout: {
@@ -82,23 +84,27 @@ export default class Board extends React.Component<Props, State> {
   }
 
   public componentDidUpdate() {
-    const { buttonThatsBeingDragged } = this.state
-    if (buttonThatsBeingDragged) {
-      const { id } = buttonThatsBeingDragged
+    const { buttonThatsBeingHovered, buttonThatsBeingDragged } = this.state
+    if (buttonThatsBeingHovered) {
+      if (buttonThatsBeingDragged) {
+        return
+      }
+      const { id } = buttonThatsBeingHovered
       const possiblyNewButtonVersion = this.props.buttons.find(b => b.id === id)
       if (
         JSON.stringify(possiblyNewButtonVersion) !==
-        JSON.stringify(buttonThatsBeingDragged)
+        JSON.stringify(buttonThatsBeingHovered)
       ) {
         this.setState({
-          buttonThatsBeingDragged: possiblyNewButtonVersion || null
+          buttonThatsBeingHovered: possiblyNewButtonVersion || null
         })
       }
     }
   }
 
   private handleDragStop = (e: any) => {
-    const { buttonThatsBeingDragged } = this.state
+    this.setState({ buttonThatsBeingDragged: null })
+    const { buttonThatsBeingHovered } = this.state
     const coords = { x: e.pageX, y: e.pageY }
     const { boardHeight, boardWidth } = this.state.layout
     const keyboardKeyDestination = determineKeyboardKeyDestination(
@@ -107,8 +113,8 @@ export default class Board extends React.Component<Props, State> {
       coords
     )
 
-    if (buttonThatsBeingDragged && keyboardKeyDestination) {
-      this.props.handleMove(buttonThatsBeingDragged, keyboardKeyDestination)
+    if (buttonThatsBeingHovered && keyboardKeyDestination) {
+      this.props.handleMove(buttonThatsBeingHovered, keyboardKeyDestination)
     }
   }
 
@@ -189,12 +195,13 @@ export default class Board extends React.Component<Props, State> {
         handle=".handle"
         position={{ x: 0, y: 0 }}
         onStop={this.handleDragStop}
+        onStart={() => this.setState({ buttonThatsBeingDragged: button })}
       >
         <Button
           button={button}
           displayProperties={{ height: itemHeight, width: itemWidth, x, y }}
           onMouseEnter={() =>
-            this.setState({ buttonThatsBeingDragged: button })
+            this.setState({ buttonThatsBeingHovered: button })
           }
         />
       </Draggable>
@@ -202,18 +209,18 @@ export default class Board extends React.Component<Props, State> {
   }
 
   private renderHoveredButton() {
-    const { buttonThatsBeingDragged } = this.state
-    return buttonThatsBeingDragged
-      ? this.renderButton(buttonThatsBeingDragged)
+    const { buttonThatsBeingHovered } = this.state
+    return buttonThatsBeingHovered
+      ? this.renderButton(buttonThatsBeingHovered)
       : null
   }
 
   private renderStableButtons() {
-    const { buttonThatsBeingDragged } = this.state
+    const { buttonThatsBeingHovered } = this.state
     return this.props.buttons
       .filter(
         ({ id }) =>
-          !buttonThatsBeingDragged || id !== buttonThatsBeingDragged.id
+          !buttonThatsBeingHovered || id !== buttonThatsBeingHovered.id
       )
       .map(this.renderButton)
   }
