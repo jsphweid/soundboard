@@ -103,7 +103,6 @@ export default class Board extends React.Component<Props, State> {
   }
 
   private handleDragStop = (e: any) => {
-    this.setState({ buttonThatsBeingDragged: null })
     const { buttonThatsBeingHovered } = this.state
     const coords = { x: e.pageX, y: e.pageY }
     const { boardHeight, boardWidth } = this.state.layout
@@ -116,6 +115,7 @@ export default class Board extends React.Component<Props, State> {
     if (buttonThatsBeingHovered && keyboardKeyDestination) {
       this.props.handleMove(buttonThatsBeingHovered, keyboardKeyDestination)
     }
+    this.setState({ buttonThatsBeingDragged: null })
   }
 
   private handleResize = (size: { width: number; height: number }) => {
