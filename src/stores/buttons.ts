@@ -6,9 +6,12 @@ import {
   isTabButton,
   ActionButton
 } from '../misc-types'
-import { defaultActionButtons, defaultTabButtons } from '../misc/constants'
 import { Sound } from '../sounds/types'
 import URLSound from '../sounds/url-source'
+import { initialData } from './data'
+
+const defaultActionButtons = initialData.filter(isActionButton)
+const defaultTabButtons = initialData.filter(isTabButton)
 
 export function makeSoundFromButton(button: ActionButton): Sound {
   switch (true) {
