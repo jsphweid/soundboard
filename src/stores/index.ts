@@ -1,43 +1,16 @@
 import { observable } from 'mobx'
-import SoundPlayerStore from './sound-player'
-import BoardLayout from './board-layout'
-import PortraitLayout from './portrait-layout'
-import LandscapeLayout from './landscape-layout'
-import ActiveLayout from './active-layout'
-import ActionButtons from './action-buttons'
-import TabButtons from './tab-buttons'
 import { createKeyboardListeners } from '../misc/keyboard-listeners'
-import ButtonCreator from './button-creator'
-import LoadBoard from './load-board'
-import SaveBoard from './save-board'
+import Buttons from './buttons'
 
 let stores = initialize()
 
 createKeyboardListeners()
 
 function initialize() {
-  const soundPlayer = new SoundPlayerStore()
-  const boardLayout = new BoardLayout()
-  const landscapeLayout = new LandscapeLayout()
-  const portraitLayout = new PortraitLayout()
-  const activeLayout = new ActiveLayout()
-  const actionButtons = new ActionButtons()
-  const tabButtons = new TabButtons()
-  const buttonCreator = new ButtonCreator()
-  const loadBoard = new LoadBoard()
-  const saveBoard = new SaveBoard()
+  const buttons = new Buttons()
 
   return observable({
-    soundPlayer,
-    boardLayout,
-    landscapeLayout,
-    portraitLayout,
-    activeLayout,
-    actionButtons,
-    tabButtons,
-    buttonCreator,
-    loadBoard,
-    saveBoard
+    buttons
   })
 }
 

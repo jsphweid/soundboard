@@ -1,55 +1,18 @@
 import { Coordinate } from '../sounds/types'
-import { LayoutSection } from '../components/board'
-import {
-  ButtonBase,
-  ValidKeyboardKey,
-  isValidTabKey,
-  isActionButton,
-  isValidActionKey,
-  isTabButton
-} from '../buttons/types'
-import { getStores } from '../stores'
 import { v4 as uuidGen } from 'uuid'
+import { numKeysWide, numKeysHigh, gridLookup } from '../board-layout'
+import { KeyboardKey, ActionButton, ButtonType, TabButton } from '../misc-types'
 
-export function determineTileCoordsFromXY(
-  boardDetails: {
-    boardHeight: number
-    boardWidth: number
-    numItemsHigh: number
-    numItemsWide: number
-  },
+export function determineKeyboardKeyDestination(
+  boardWidth: number,
+  boardHeight: number,
   xy: Coordinate
-): Coordinate | null {
-  const { boardHeight, boardWidth, numItemsHigh, numItemsWide } = boardDetails
-  const y = Math.floor((xy.y / boardHeight) * numItemsHigh)
-  const x = Math.floor((xy.x / boardWidth) * numItemsWide)
-  return x >= numItemsWide || y >= numItemsHigh || x < 0 || y < 0
-    ? null
-    : { x, y }
-}
-
-export function pointInSection(
-  section: LayoutSection,
-  point: Coordinate
-): boolean {
-  const { x, y, height, width } = section
-  return (
-    point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
-  )
-}
-
-export function moveButton(button: ButtonBase, destination: ValidKeyboardKey) {
-  if (isActionButton(button) && isValidActionKey(destination)) {
-    return getStores().actionButtons.moveActionButton(button, destination)
-  }
-
-  if (isTabButton(button) && isValidTabKey(destination)) {
-    return getStores().tabButtons.moveTabButton(button, destination)
-  }
-
-  console.log(
-    'An action key can only be moved to a valid action key tile. A tab key can only be moved to valid tab key tile.'
-  )
+) {
+  const y = Math.floor((xy.y / boardHeight) * numKeysHigh)
+  const x = Math.floor((xy.x / boardWidth) * numKeysWide)
+  const position =
+    x >= numKeysWide || y >= numKeysHigh || x < 0 || y < 0 ? null : { x, y }
+  return position ? gridLookup.getKeyFromCoords(position) : null
 }
 
 export interface DropdownOption {
@@ -70,6 +33,39 @@ export function enumOptionToDropdownOption(
   ) as DropdownOption
 }
 
-export function makeRandomId() {
+export function generateRandomId(): string {
   return uuidGen()
 }
+
+export function audioUrlIsValid(url: string): Promise<boolean> {
+  const audio = new Audio(url)
+  audio.volume = 0
+  return audio
+    .play()
+    .then(() => {
+      audio.pause()
+      return true
+    })
+    .catch(() => false)
+}
+
+export const makeBlankActionButton = (
+  keyboardKey: KeyboardKey,
+  tabId: string
+): ActionButton => ({
+  id: generateRandomId(),
+  type: ButtonType.Action,
+  title: '',
+  keyboardKey,
+  tabId,
+  url: '',
+  start: 0,
+  end: 0
+})
+
+export const makeBlankTabButton = (keyboardKey: KeyboardKey): TabButton => ({
+  id: generateRandomId(),
+  type: ButtonType.Tab,
+  title: '',
+  keyboardKey
+})

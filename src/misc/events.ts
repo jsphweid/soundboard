@@ -1,18 +1,13 @@
 import { getStores } from '../stores'
-import { ValidKeyboardKey, isValidTabKey } from '../buttons/types'
+import { KeyboardKey, isKeyboardKey } from '../misc-types'
 
-export function handleKeyPressOrClick(key: ValidKeyboardKey) {
-  const { actionButtons, tabButtons, soundPlayer } = getStores()
+export function handleKeyPressOrClick(key: KeyboardKey) {
+  const { buttons } = getStores()
 
-  if (isValidTabKey(key)) {
-    const button = tabButtons.getButtonByKeyboardKey(key)
-    if (button) {
-      tabButtons.changeTab(button.id)
-    }
-  } else {
-    const button = actionButtons.getButtonByKeyboardKey(key)
-    if (button) {
-      soundPlayer.triggerSound(button.id)
+  if (isKeyboardKey(key)) {
+    const button = buttons.getButtonInCurrentView(key)
+    if (button && button.onTrigger) {
+      button.onTrigger()
     }
   }
 }

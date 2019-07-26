@@ -1,85 +1,81 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import {
-  ValidKeyboardKey,
-  isValidActionKey,
-  isTabButton,
-  isValidTabKey
-} from '../buttons/types'
-import { getStores } from '../stores'
-import BoardLayout from '../stores/board-layout'
-import Tile from './tile'
-import Button, { ButtonWithCoords } from './button'
+import Button from './button'
 import Draggable from 'react-draggable'
-import { moveButton } from '../misc/helpers'
-import { handleKeyPressOrClick } from '../misc/events'
-import Menu from './menu'
-import * as QueryString from 'query-string'
-import Axios from 'axios'
-import { apiBaseUrl } from '../misc/constants'
-
 const resizeAware = require('react-resize-aware')
 const ResizeAware = resizeAware.default || resizeAware
+import {
+  keyboardKeys,
+  numKeysHigh,
+  numKeysWide,
+  gridLookup
+} from '../board-layout'
+import {
+  determineKeyboardKeyDestination,
+  makeBlankTabButton
+} from '../misc/helpers'
+import { KeyboardKey, EitherButton, isActionButton } from '../misc-types'
+import axios from 'axios'
+import { apiBaseUrl } from '../misc/constants'
+import * as QueryString from 'query-string'
+import { getStores } from '../stores'
+import NewButton from './new-button'
+import { makeBlankActionButton } from '../misc/helpers'
 
-interface Props {}
-
-interface State {
-  activeLayout: 'landscapeLayout' | 'portraitLayout'
-  buttonThatsBeingDragged: ButtonWithCoords | null // TODO: any...?
-  everythingLoaded: boolean
-}
+const css = require('./board.module.css')
 
 export interface Layout {
-  numBlocksWide: number
-  numBlocksHigh: number
-  blockWidth: number
-  blockHeight: number
-  blockWidthPercent: number
-  blockHeightPercent: number
-  keyboardKeySize: number
-  titleSize: number
-  actionKeysSection: LayoutSection
-  tabKeysSection: LayoutSection
-  menuSection: LayoutSection
+  boardHeight: number
+  boardWidth: number
+  itemHeight: number
+  itemWidth: number
 }
 
-export interface LayoutSection {
-  height: number
-  width: number
-  x: number
-  y: number
+interface State {
+  buttonThatsBeingHovered: EitherButton | null
+  buttonThatsBeingDragged: EitherButton | null
+  everythingLoaded: boolean
+  layout: Layout
+  newButton: { keyboardKey: KeyboardKey; tabId: string } | null
 }
 
-export interface Dimensions {
-  height: number
-  width: number
+interface Props {
+  buttons: EitherButton[]
+  handleMove: (button: EitherButton, keyboardKey: KeyboardKey) => void
 }
 
 @observer
 export default class Board extends React.Component<Props, State> {
-  private doubleClickWaiter: NodeJS.Timer | null = null
   private els: { board: any } = { board: null }
 
   constructor(props: Props) {
     super(props)
     this.state = {
-      activeLayout: 'landscapeLayout',
       buttonThatsBeingDragged: null,
-      everythingLoaded: false
+      buttonThatsBeingHovered: null,
+      newButton: null,
+      everythingLoaded: false,
+      layout: {
+        boardHeight: 0,
+        boardWidth: 0,
+        itemHeight: 0,
+        itemWidth: 0
+      }
     }
   }
 
-  componentDidMount() {
+  public componentDidMount() {
+    const { clientWidth, clientHeight } = this.els.board
     this.handleResize({
-      width: this.els.board.clientWidth
+      width: clientWidth,
+      height: clientHeight
     })
     const query = QueryString.parse(location.search)
     if (query.board) {
-      Axios.get(`${apiBaseUrl}/${query.board}`)
+      axios
+        .get(`${apiBaseUrl}/${query.board}`)
         .then(response => {
-          getStores().actionButtons.reloadEverythingFromValidJSON(
-            response.data.board
-          )
+          getStores().buttons.reloadEverythingFromValidJSON(response.data.board)
         })
         .finally(() => this.setState({ everythingLoaded: true }))
     } else {
@@ -87,217 +83,176 @@ export default class Board extends React.Component<Props, State> {
     }
   }
 
-  handleDragDrop = (e: any) => {
-    const { buttonThatsBeingDragged } = this.state
-    if (!buttonThatsBeingDragged) return
-    const { getKeyAtPageCoordinate, isTrashDrag } = getStores().activeLayout
-    const { pageX, pageY } = e
-    const point = { x: pageX, y: pageY }
-
-    const destination = getKeyAtPageCoordinate(point)
-    if (destination) {
-      moveButton(buttonThatsBeingDragged, destination)
-    } else if (
-      isTrashDrag(point) &&
-      isValidActionKey(buttonThatsBeingDragged.keyboardKey)
-    ) {
-      getStores().actionButtons.deleteButton(buttonThatsBeingDragged.id)
+  public componentDidUpdate() {
+    const { buttonThatsBeingHovered, buttonThatsBeingDragged } = this.state
+    if (buttonThatsBeingHovered) {
+      if (buttonThatsBeingDragged) {
+        return
+      }
+      const { id } = buttonThatsBeingHovered
+      const possiblyNewButtonVersion = this.props.buttons.find(b => b.id === id)
+      if (
+        JSON.stringify(possiblyNewButtonVersion) !==
+        JSON.stringify(buttonThatsBeingHovered)
+      ) {
+        this.setState({
+          buttonThatsBeingHovered: possiblyNewButtonVersion || null
+        })
+      }
     }
+  }
 
+  private handleDragStop = (e: any) => {
+    const { buttonThatsBeingHovered } = this.state
+    const coords = { x: e.pageX, y: e.pageY }
+    const { boardHeight, boardWidth } = this.state.layout
+    const keyboardKeyDestination = determineKeyboardKeyDestination(
+      boardWidth,
+      boardHeight,
+      coords
+    )
+
+    if (buttonThatsBeingHovered && keyboardKeyDestination) {
+      this.props.handleMove(buttonThatsBeingHovered, keyboardKeyDestination)
+    }
     this.setState({ buttonThatsBeingDragged: null })
   }
 
-  handleDragStart = () => {
-    if (this.doubleClickWaiter) {
-      clearTimeout(this.doubleClickWaiter)
-    }
-  }
-
-  handleInitialDragStart = (e: any, button: ButtonWithCoords) => {
-    // Assumes that everything is a block of equal proportion...
-    const { blockWidth, blockHeight } = getStores().activeLayout
-    const x = Math.floor(e.pageX / blockWidth) * blockWidth
-    const y = Math.floor(e.pageY / blockHeight) * blockHeight
-
-    // waiting for double click, else it was legit single click
-    this.doubleClickWaiter = setTimeout(() => {
-      handleKeyPressOrClick(button.keyboardKey)
-      this.setState({ buttonThatsBeingDragged: null })
-    }, 100)
-
-    this.setState({
-      buttonThatsBeingDragged: { ...button, coords: { x, y } }
-    })
-  }
-
-  handleDrag = () => {
-    // TODO: add hover over tab makes it active
-  }
-
-  handleResize = (size: { width: number }) => {
+  private handleResize = (size: { width: number; height: number }) => {
     if (!size.width) return
-    const activeLayout = size.width > 800 ? 'landscapeLayout' : 'portraitLayout'
-    this.setState({ activeLayout })
-
-    getStores().boardLayout.setNewDimensions({
-      width: size.width,
-      height: window.innerHeight
-    })
+    const layout = {
+      boardWidth: size.width,
+      boardHeight: size.height,
+      itemWidth: size.width / numKeysWide,
+      itemHeight: size.height / numKeysHigh
+    }
+    this.setState({ layout })
   }
 
-  private renderKeysSection(
-    section: LayoutSection,
-    keyboardKeys: ValidKeyboardKey[][],
-    buttonsWithCoords: ButtonWithCoords[]
-  ) {
-    const tiles = keyboardKeys
-      .flat()
-      .map(tileKey => <Tile key={`tab-${tileKey}`} keyboardKey={tileKey} />)
+  private renderTiles() {
+    const tiles: JSX.Element[] = []
 
-    const { buttonThatsBeingDragged } = this.state
+    const { itemHeight, itemWidth } = this.state.layout
+    const { newButton } = this.state
+    const { activeTabId, addButton } = getStores().buttons
 
-    const buttons = buttonsWithCoords
-      .filter(button =>
-        buttonThatsBeingDragged
-          ? buttonThatsBeingDragged.id !== button.id
-          : true
-      )
-      .map(button => {
-        return (
-          <Button
-            key={`button${button.id}`}
-            button={button}
-            onClick={(e: any) => this.handleInitialDragStart(e, button)}
-          />
+    keyboardKeys.forEach(row =>
+      row.forEach(key => {
+        const tileHasNewButton =
+          newButton &&
+          newButton.keyboardKey === key &&
+          newButton.tabId === activeTabId
+        tiles.push(
+          <div
+            key={`tile-${key}`}
+            className={css.tile}
+            style={{
+              height: itemHeight,
+              width: itemWidth
+            }}
+            onDoubleClick={
+              tileHasNewButton
+                ? undefined
+                : () =>
+                    this.setState({
+                      newButton: {
+                        keyboardKey: key,
+                        tabId: activeTabId
+                      }
+                    })
+            }
+          >
+            {tileHasNewButton ? (
+              <NewButton
+                onNewTab={() => {
+                  addButton(makeBlankTabButton(key))
+                  this.setState({ newButton: null })
+                }}
+                onNewAction={() => {
+                  addButton(makeBlankActionButton(key, activeTabId))
+                  this.setState({ newButton: null })
+                }}
+              />
+            ) : (
+              <div className={css.tileNum}>{key}</div>
+            )}
+          </div>
         )
       })
-
-    const key =
-      keyboardKeys.length && isValidTabKey(keyboardKeys[0][0])
-        ? 'tab-section'
-        : 'action-section'
-
-    return (
-      <div
-        key={key}
-        style={{
-          height: `${section.height}px`,
-          width: `${section.width}px`,
-          left: `${section.x}px`,
-          top: `${section.y}px`,
-          position: 'absolute',
-          display: 'block'
-        }}
-      >
-        {tiles}
-        {buttons}
-      </div>
     )
+    return tiles
   }
 
-  private renderButtonBeingDragged() {
-    const button = this.state.buttonThatsBeingDragged
-    if (!button) return null
+  private renderButton = (button: EitherButton) => {
+    const { itemHeight, itemWidth } = this.state.layout
+    const coords = gridLookup.getCoordsFromKey(button.keyboardKey)
+    const x = coords.x * itemWidth
+    const y = coords.y * itemHeight
     return (
       <Draggable
         key={`button-${button.id}`}
         bounds="parent"
+        handle=".handle"
         position={{ x: 0, y: 0 }}
-        onDrag={this.handleDrag}
-        onStart={this.handleDragStart}
-        onStop={this.handleDragDrop}
+        onStop={this.handleDragStop}
+        onStart={() => this.setState({ buttonThatsBeingDragged: button })}
       >
-        <Button button={button} selected={true} />
+        <Button
+          button={button}
+          displayProperties={{ height: itemHeight, width: itemWidth, x, y }}
+          onMouseEnter={() =>
+            this.setState({ buttonThatsBeingHovered: button })
+          }
+        />
       </Draggable>
     )
   }
 
-  private renderTabKeysSection() {
-    const { activeLayout, tabButtons } = getStores()
-    return this.renderKeysSection(
-      activeLayout.tabKeysSection,
-      BoardLayout.tabs,
-      tabButtons.tabs.map(button => {
-        const { blockWidth, blockHeight } = activeLayout
-        const { x, y } = BoardLayout.tabsGridLookup.getCoordsFromkey(
-          button.keyboardKey
-        )
-        return {
-          coords: { x: blockWidth * x, y: blockHeight * y },
-          ...button
-        }
-      })
-    )
+  private renderHoveredButton() {
+    const { buttonThatsBeingHovered } = this.state
+    return buttonThatsBeingHovered
+      ? this.renderButton(buttonThatsBeingHovered)
+      : null
   }
 
-  private renderActionKeysSection() {
-    const { activeLayout, actionButtons } = getStores()
-    return this.renderKeysSection(
-      activeLayout.actionKeysSection,
-      BoardLayout.hotkeys,
-      actionButtons.currentButtonsInTab.map(button => {
-        const { blockWidth, blockHeight } = activeLayout
-        const { x, y } = BoardLayout.hotkeysGridLookup.getCoordsFromkey(
-          button.keyboardKey
-        )
-        return {
-          coords: { x: blockWidth * x, y: blockHeight * y },
-          ...button
-        }
-      })
-    )
-  }
-
-  private renderMenuSection() {
-    const { height, width, x, y } = getStores().activeLayout.menuSection
-    return (
-      <div
-        key="menu"
-        style={{
-          backgroundColor: 'grey',
-          height: `${height}px`,
-          width: `${width}px`,
-          left: `${x}px`,
-          top: `${y}px`,
-          position: 'absolute',
-          boxShadow: `inset 0px 0px 0px 1px #000000`
-        }}
-      >
-        <Menu />
-      </div>
-    )
+  private renderStableButtons() {
+    const { buttonThatsBeingHovered } = this.state
+    return this.props.buttons
+      .filter(
+        ({ id }) =>
+          !buttonThatsBeingHovered || id !== buttonThatsBeingHovered.id
+      )
+      .map(this.renderButton)
   }
 
   public render() {
-    const content =
-      this.state.everythingLoaded &&
-      getStores().activeLayout.blockHeight > 5 ? (
-        [
-          this.renderButtonBeingDragged(),
-          this.renderActionKeysSection(),
-          this.renderTabKeysSection(),
-          this.renderMenuSection()
-        ]
-      ) : (
-        <div
-          style={{ backgroundColor: 'grey', width: '100vw', height: `100vh` }}
-        >
-          <h1 style={{ margin: `0px`, fontSize: `80px` }}>Loading...</h1>
-        </div>
-      )
+    const { everythingLoaded } = this.state
+    const { itemHeight, itemWidth } = this.state.layout
+
+    // hack to hide stuff until height and widths are accurate
+    const renderStuff = everythingLoaded && itemHeight > 30 && itemWidth > 30
+
     return (
       <ResizeAware
         ref={(el: any) => (this.els.board = el)}
         onlyEvent={true}
         onResize={this.handleResize}
+        className="prevent-selection"
         id="sb-board"
         style={{
           position: 'relative',
           width: '100vw',
-          height: `100vh`
+          transition: `height 1s`,
+          height: everythingLoaded ? `100vh` : `0vh`
         }}
       >
-        {content}
+        {renderStuff
+          ? [
+              this.renderTiles(),
+              this.renderStableButtons(),
+              this.renderHoveredButton()
+            ]
+          : null}
       </ResizeAware>
     )
   }

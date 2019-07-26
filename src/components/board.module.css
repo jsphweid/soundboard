@@ -1,0 +1,14 @@
+.tile {
+  float: left;
+  position: relative;
+}
+
+.tileNum {
+  text-align: center;
+  font-size: 12vw;
+  line-height: 19vh;
+  opacity: 0.1;
+  border: 0.5px solid black;
+  height: 100%;
+  width: 100%;
+}
