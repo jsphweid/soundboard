@@ -88,11 +88,11 @@ export default class Button extends React.Component<Props, State> {
   private renderMainContent() {
     const activeId = getStores().buttons.activeTabId
     const { id, title, onTrigger } = this.props.button
-    if (activeId === id) {
-      return
-    }
+
     return this.state.editing ? (
       this.renderEditForm()
+    ) : activeId === id ? (
+      <button className={css.bigButtonActive}>{title}</button>
     ) : (
       <button className={css.bigButton} onClick={onTrigger}>
         {title}

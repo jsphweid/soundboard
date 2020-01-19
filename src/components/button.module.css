@@ -30,6 +30,20 @@
   outline: none;
 }
 
+.bigButtonActive {
+  width: calc(100% - 16px);
+  flex: 1;
+  height: 100%;
+  margin: 8px;
+  text-align: center;
+  font-size: 4vh;
+  background: rgb(106, 106, 238);
+  border-radius: 8px;
+  cursor: initial;
+  opacity: 0.2;
+  outline: none;
+}
+
 .icon {
   height: 100%;
   width: 33.3333%;
