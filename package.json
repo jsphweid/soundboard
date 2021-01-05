@@ -48,7 +48,7 @@
     "@types/storybook__react": "^4.0.1",
     "@types/uuid": "^3.4.4",
     "awesome-typescript-loader": "^5.2.1",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-loader": "^8.0.5",
     "css-loader": "^2.1.1",
     "final-form": "^4.12.0",
